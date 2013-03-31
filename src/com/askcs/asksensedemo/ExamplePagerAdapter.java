@@ -1,7 +1,6 @@
 package com.askcs.asksensedemo;
 
 import android.app.Activity;
-import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
@@ -12,45 +11,45 @@ import android.widget.TextView;
 
 public class ExamplePagerAdapter extends PagerAdapter {
 	
-	protected transient Activity mContext;
+	protected transient Activity context;
 	
-	private int mLength = 0;
-	private int mBackgroundColor = 0xFFFFFFFF;
-	private int mTextColor = 0xFF000000;
+	private int length;
+	private int backgroundColor;
+	private int textColor;
 	
-	private String[] mData = {"1", "2", "3"};
+	private String[] data = {"1", "2", "3"};
 	
 	public ExamplePagerAdapter(Activity context, int length, int backgroundColor, int textColor) {
-		mContext = context;
-		mLength = length;
-		mBackgroundColor = backgroundColor;
-		mTextColor = textColor;
+		this.context = context;
+		this.length = length;
+		this.backgroundColor = backgroundColor;
+		this.textColor = textColor;
 	}
 	
 	@Override
 	public int getCount() {
-		return mLength;
+		return length;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
 	public Object instantiateItem(View container, int position) {
 		
-		RelativeLayout v = new RelativeLayout(mContext);
+		RelativeLayout layout = new RelativeLayout(context);
 		
-		TextView t = new TextView(mContext);
+		TextView t = new TextView(context);
 		t.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-		t.setText(mData[position]);
+		t.setText(data[position]);
 		t.setTextSize(120);
 		t.setGravity(Gravity.CENTER);
-		t.setTextColor(mTextColor);
-		t.setBackgroundColor(mBackgroundColor);
+		t.setTextColor(textColor);
+		t.setBackgroundColor(backgroundColor);
 		
-		v.addView(t);
+		layout.addView(t);
 		
-		((ViewPager) container).addView(v, 0);
+		((ViewPager) container).addView(layout, 0);
 		
-		return v;
+		return layout;
 	}
 	
 	
@@ -63,21 +62,5 @@ public class ExamplePagerAdapter extends PagerAdapter {
 	@Override
 	public boolean isViewFromObject(View view, Object object) {
 		return view == ((View) object);
-	}
-	
-	
-	@Override
-	public void finishUpdate(View container) {}
-	
-	@Override
-	public void restoreState(Parcelable state, ClassLoader loader) {}
-	
-	@Override
-	public Parcelable saveState() {
-		return null;
-	}
-	
-	@Override
-	public void startUpdate(View container) {}
-	
+	}	
 }

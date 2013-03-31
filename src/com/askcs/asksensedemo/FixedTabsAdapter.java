@@ -9,25 +9,25 @@ import com.astuetz.viewpager.extensions.ViewPagerTabButton;
 
 public class FixedTabsAdapter implements TabsAdapter {
 	
-	private Activity mContext;
+	private Activity context;
 	
-	private String[] mTitles = {
+	private String[] tabTitles = {
 	    "ACTIVITY", "LOCATION", "PRESENCE"
 	};
 	
-	public FixedTabsAdapter(Activity ctx) {
-		this.mContext = ctx;
+	public FixedTabsAdapter(Activity context) {
+		this.context = context;
 	}
 	
 	@Override
 	public View getView(int position) {
 		
-		LayoutInflater inflater = mContext.getLayoutInflater();
+		LayoutInflater inflater = context.getLayoutInflater();
 		
 		ViewPagerTabButton tab = (ViewPagerTabButton) inflater.inflate(R.layout.tab, null);
 		
-		if (position < mTitles.length) {
-			tab.setText(mTitles[position]);
+		if (position < tabTitles.length) {
+			tab.setText(tabTitles[position]);
 		}
 		
 		return tab;

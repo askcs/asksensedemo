@@ -10,10 +10,10 @@ import android.support.v4.view.ViewPager;
 
 public class MainActivity extends Activity {
 
-	private PagerAdapter mPagerAdapter;
-	private ViewPager mPager;
-	private FixedTabsView mFixedTabs;
-	private TabsAdapter mFixedTabsAdapter;
+	private PagerAdapter pagerAdapter;
+	private ViewPager pager;
+	private FixedTabsView fixedTabs;
+	private TabsAdapter fixedTabsAdapter;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -22,17 +22,18 @@ public class MainActivity extends Activity {
 		
 		setContentView(R.layout.activity_main);
 		initViewPager(3, 0xFFFFFFFF, 0xFF000000);
-		mFixedTabs = (FixedTabsView) findViewById(R.id.fixed_tabs);
-		mFixedTabsAdapter = new FixedTabsAdapter(this);
-		mFixedTabs.setAdapter(mFixedTabsAdapter);
-		mFixedTabs.setViewPager(mPager);
+		fixedTabs = (FixedTabsView) findViewById(R.id.fixed_tabs);
+		fixedTabsAdapter = new FixedTabsAdapter(this);
+		fixedTabs.setAdapter(fixedTabsAdapter);
+		fixedTabs.setViewPager(pager);
 	}
 	
 	private void initViewPager(int pageCount, int backgroundColor, int textColor) {
-		mPager = (ViewPager) findViewById(R.id.pager);
-		mPagerAdapter = new ExamplePagerAdapter(this, pageCount, backgroundColor, textColor);
-		mPager.setAdapter(mPagerAdapter);
-		mPager.setCurrentItem(1);
-		mPager.setPageMargin(1);
+		
+		pager = (ViewPager) findViewById(R.id.pager);
+		pagerAdapter = new ExamplePagerAdapter(this, pageCount, backgroundColor, textColor);
+		pager.setAdapter(pagerAdapter);
+		pager.setCurrentItem(0);
+		pager.setPageMargin(1);
 	}
 }
