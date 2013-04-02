@@ -1,8 +1,3 @@
-# exclude IDE specific settings
-.classpath
-.project
-.settings/
-
 # exclude generated and compile folders
 bin/
 gen/
