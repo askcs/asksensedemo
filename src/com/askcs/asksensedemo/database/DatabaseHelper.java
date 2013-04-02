@@ -21,56 +21,42 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final String DATABASE_NAME = "ask_sense_demo.db";
 	private static final int DATABASE_VERSION = 1;
 
-	private Dao<Setting, Integer> settingDao = null;
+	private Dao<Setting, String> settingDao = null;
 
 	public DatabaseHelper(Context context) {
+		
 		super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
 	}
 
-	/**
-	 * This is called when the database is first created. Usually you should
-	 * call createTable statements here to create the tables that will store
-	 * your data.
-	 */
 	@Override
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 		
+		Log.i(TAG, "onCreate");
+		
 		try {
-			Log.i(TAG, "onCreate");
-			
 			for(Class<?> tableClass : DatabaseConfigUtil.classes) {
 				Log.i(TAG, "creating a table for class: " + tableClass.getName());
 				TableUtils.createTable(connectionSource, tableClass);				
 			}
-			
 		} catch (SQLException e) {
 			Log.e(TAG, "Can't create database", e);
 			throw new RuntimeException(e);
-		}
-
-		try {
-			Dao<Setting, Integer> dao = getSettingDao();
-			dao.create(new Setting("user", "bart"));
-			dao.create(new Setting("password", "s3cr3t"));
-		} catch (SQLException e) {
-			Log.e(TAG, "could not insert data:", e);
 		}
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource,
 			int oldVersion, int newVersion) {
-		// Not needed.
+		
+		// TODO
 	}
 
-	/**
-	 * Returns the Database Access Object (DAO) for our Setting class. It
-	 * will create it or just give the cached value.
-	 */
-	public Dao<Setting, Integer> getSettingDao() throws SQLException {
+	public Dao<Setting, String> getSettingDao() throws SQLException {
+		
 		if (settingDao == null) {
 			settingDao = getDao(Setting.class);
 		}
+		
 		return settingDao;
 	}
 

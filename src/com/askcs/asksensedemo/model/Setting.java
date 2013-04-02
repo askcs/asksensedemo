@@ -6,6 +6,9 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName="settings")
 public class Setting {
 	
+	public static final String USER_KEY = "user";
+	public static final String PASSWORD_KEY = "password";
+	
 	@DatabaseField(id=true)
 	private String key;
 	

@@ -10,6 +10,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -23,7 +24,6 @@ public class MainActivity extends Activity {
 	private ViewPager pager;
 	private FixedTabsView fixedTabs;
 	private TabsAdapter fixedTabsAdapter;
-
 	private DatabaseHelper databaseHelper = null;
 	
 	@Override
@@ -40,10 +40,13 @@ public class MainActivity extends Activity {
 		fixedTabs.setViewPager(pager);
 		
 		try {
-			Dao<Setting, Integer> settingDao = getHelper().getSettingDao();
-			Log.i(TAG, "all settings: " + settingDao.queryForAll());
+			Setting user = getHelper().getSettingDao().queryForId(Setting.USER_KEY);
+			if(user == null) {
+				Intent intent = new Intent(this, LoginActivity.class);
+			    startActivity(intent);				
+			}
 		} catch (SQLException e) {
-			Log.e(TAG, "could not get setting-DAO:", e);
+			Log.e(TAG, "Oops, SQLException:", e);
 		}
 	}
 	
