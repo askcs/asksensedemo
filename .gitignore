@@ -6,3 +6,6 @@
 # exclude generated and compile folders
 bin/
 gen/
+
+# exclude log files
+*.log

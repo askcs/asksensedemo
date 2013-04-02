@@ -9,9 +9,9 @@ import com.astuetz.viewpager.extensions.ViewPagerTabButton;
 
 public class FixedTabsAdapter implements TabsAdapter {
 	
-	private Activity context;
+	private final Activity context;
 	
-	private String[] tabTitles = {
+	private final String[] tabTitles = {
 	    "ACTIVITY", "LOCATION", "PRESENCE"
 	};
 	
@@ -26,11 +26,10 @@ public class FixedTabsAdapter implements TabsAdapter {
 		
 		ViewPagerTabButton tab = (ViewPagerTabButton) inflater.inflate(R.layout.tab, null);
 		
-		if (position < tabTitles.length) {
+		if (position >= 0 || position < tabTitles.length) {
 			tab.setText(tabTitles[position]);
 		}
 		
 		return tab;
 	}
-	
 }
