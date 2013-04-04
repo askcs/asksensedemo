@@ -9,7 +9,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class ExamplePagerAdapter extends PagerAdapter {
+public class FixedTabsPagerAdapter extends PagerAdapter {
 	
 	protected transient Activity context;
 	
@@ -19,7 +19,7 @@ public class ExamplePagerAdapter extends PagerAdapter {
 	
 	private String[] data = {"1", "2", "3"};
 	
-	public ExamplePagerAdapter(Activity context, int length, int backgroundColor, int textColor) {
+	public FixedTabsPagerAdapter(Activity context, int length, int backgroundColor, int textColor) {
 		this.context = context;
 		this.length = length;
 		this.backgroundColor = backgroundColor;

@@ -60,7 +60,7 @@ public class MainActivity extends Activity {
 	private void initViewPager(int pageCount, int backgroundColor, int textColor) {
 
 		pager = (ViewPager) findViewById(R.id.pager);
-		pagerAdapter = new ExamplePagerAdapter(this, pageCount, backgroundColor, textColor);
+		pagerAdapter = new FixedTabsPagerAdapter(this, pageCount, backgroundColor, textColor);
 		pager.setAdapter(pagerAdapter);
 		pager.setCurrentItem(0);
 		pager.setPageMargin(1);
