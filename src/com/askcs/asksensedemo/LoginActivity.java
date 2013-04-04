@@ -2,16 +2,12 @@ package com.askcs.asksensedemo;
 
 import java.sql.SQLException;
 
-import com.askcs.asksensedemo.connection.SenseRestClient;
 import com.askcs.asksensedemo.database.DatabaseHelper;
 import com.askcs.asksensedemo.model.Setting;
 import com.askcs.asksensedemo.util.Utils;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -129,7 +125,7 @@ public class LoginActivity extends Activity {
 			String password1 = password1Text.getText().toString().trim();
 			String password2 = password2Text.getText().toString().trim();
 			
-			// Make sure a username and password is provided.
+			// Make sure a username and password are provided.
 			if(username.length() > 0 && password1.length() > 0) {
 				
 				if(password2.length() > 0) {
