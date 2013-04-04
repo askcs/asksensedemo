@@ -1,13 +1,11 @@
 package com.askcs.asksensedemo.service;
 
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.askcs.asksensedemo.MainActivity;
 import com.askcs.asksensedemo.R;
 import com.askcs.asksensedemo.database.DatabaseHelper;
-import com.askcs.asksensedemo.model.Setting;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import android.app.Notification;
@@ -64,7 +62,7 @@ public class AskForegroundService extends Service {
 		return START_NOT_STICKY;
 	}
 	
-	private DatabaseHelper getHelper() {
+	public DatabaseHelper getHelper() {
 		
 	    if (databaseHelper == null) {
 	        databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
@@ -164,7 +162,7 @@ public class AskForegroundService extends Service {
 		Resources res = getResources();
 		
 		Notification notification = new Notification(
-				R.drawable.s_ask_icon_gray, res.getString(R.string.app_name_started), 
+				R.drawable.s_ask_icon_gray, res.getString(R.string.app_running), 
 				System.currentTimeMillis());
 
 		Intent gotoIntent = new Intent(this , MainActivity.class);
@@ -175,15 +173,8 @@ public class AskForegroundService extends Service {
 		PendingIntent pendingIntent = PendingIntent.getActivity(this,
 				0, gotoIntent, 0);
 
-		try {
-			Setting user = this.getHelper().getSettingDao().queryForId(Setting.USER_KEY);
-			
-			notification.setLatestEventInfo(this, res.getString(R.string.app_name), 
-					res.getString(R.string.app_name_started, user.getValue()), pendingIntent);
-			
-		} catch (SQLException e) {
-			Log.e(TAG, "Something went wrong trying to get the user from the local DB:", e);
-		}
+		notification.setLatestEventInfo(this, res.getString(R.string.app_name), 
+				res.getString(R.string.app_running), pendingIntent);
 		
 		notification.flags |= Notification.FLAG_NO_CLEAR;
 

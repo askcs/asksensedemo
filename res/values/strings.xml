@@ -4,7 +4,7 @@
     <string name="app_name">AskSenseDemo</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Ask-Sense demo</string>
-    <string name="app_name_started">AskSenseDemo started</string>
+    <string name="app_running">AskSenseDemo running...</string>
     <string name="logged_in_as">logged in as %1$s</string>
     <string name="not_logged_in">not logged in</string>
     <string name="username">username</string>

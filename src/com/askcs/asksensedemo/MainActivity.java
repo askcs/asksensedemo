@@ -67,7 +67,7 @@ public class MainActivity extends Activity {
 	}
 	
 	
-	private DatabaseHelper getHelper() {
+	public DatabaseHelper getHelper() {
 		
 	    if (databaseHelper == null) {
 	        databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
