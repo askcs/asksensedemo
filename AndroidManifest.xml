@@ -25,6 +25,8 @@
         
         <activity android:name="com.askcs.asksensedemo.LoginActivity"/>
         
+        <service android:name=".service.AskForegroundService"/>
+        
     </application>
 
 </manifest>

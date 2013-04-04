@@ -31,11 +31,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 		
-		Log.i(TAG, "onCreate");
+		Log.d(TAG, "onCreate");
 		
 		try {
 			for(Class<?> tableClass : DatabaseConfigUtil.classes) {
-				Log.i(TAG, "creating a table for class: " + tableClass.getName());
+				Log.d(TAG, "creating a table for class: " + tableClass.getName());
 				TableUtils.createTable(connectionSource, tableClass);				
 			}
 		} catch (SQLException e) {

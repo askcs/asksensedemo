@@ -4,10 +4,10 @@ import java.sql.SQLException;
 
 import com.askcs.asksensedemo.database.DatabaseHelper;
 import com.askcs.asksensedemo.model.Setting;
+import com.askcs.asksensedemo.service.AskForegroundService;
 import com.astuetz.viewpager.extensions.FixedTabsView;
 import com.astuetz.viewpager.extensions.TabsAdapter;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -28,10 +28,15 @@ public class MainActivity extends Activity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		
+				
 		super.onCreate(savedInstanceState);
 		
+		Log.d(TAG, "onCreate");
+		
 		setContentView(R.layout.activity_main);
+		
+		startService(new Intent(this, AskForegroundService.class));
+				
 		initViewPager(3, 0xFFFFFFFF, 0xFF000000);
 		
 		fixedTabs = (FixedTabsView) findViewById(R.id.fixed_tabs);
@@ -41,17 +46,19 @@ public class MainActivity extends Activity {
 		
 		try {
 			Setting user = getHelper().getSettingDao().queryForId(Setting.USER_KEY);
+			
 			if(user == null) {
 				Intent intent = new Intent(this, LoginActivity.class);
 			    startActivity(intent);				
 			}
+
 		} catch (SQLException e) {
 			Log.e(TAG, "Oops, SQLException:", e);
 		}
 	}
 	
 	private void initViewPager(int pageCount, int backgroundColor, int textColor) {
-		
+
 		pager = (ViewPager) findViewById(R.id.pager);
 		pagerAdapter = new ExamplePagerAdapter(this, pageCount, backgroundColor, textColor);
 		pager.setAdapter(pagerAdapter);
@@ -59,11 +66,12 @@ public class MainActivity extends Activity {
 		pager.setPageMargin(1);
 	}
 	
+	
 	private DatabaseHelper getHelper() {
 		
 	    if (databaseHelper == null) {
 	        databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-	    }
+	    }			
 	    
 	    return databaseHelper;
 	}
@@ -71,6 +79,8 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 	    
+		Log.d(TAG, "onDestroy");
+		
 		super.onDestroy();
 	    
 	    if (databaseHelper != null) {

@@ -2,9 +2,13 @@ package com.askcs.asksensedemo;
 
 import java.sql.SQLException;
 
+import com.askcs.asksensedemo.connection.SenseRestClient;
 import com.askcs.asksensedemo.database.DatabaseHelper;
 import com.askcs.asksensedemo.model.Setting;
+import com.askcs.asksensedemo.util.Utils;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -42,6 +46,12 @@ public class LoginActivity extends Activity {
 		
 		loginButton.setEnabled(false);
 		
+		// >>> TODO remove after testing
+		usernameText.setText(super.getString(R.string.sense_username));
+		password1Text.setText(super.getString(R.string.sense_password));
+		loginButton.setEnabled(true);
+		// <<< TODO remove after testing
+		
 		loginButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -63,12 +73,9 @@ public class LoginActivity extends Activity {
 		String password2 = password2Text.getText().toString().trim();
 		
 		if(password2.length() == 0) {
-			
-			// TODO make an (async) task instead
 			try {
 				getHelper().getSettingDao().create(new Setting(Setting.USER_KEY, username));
-				getHelper().getSettingDao().create(new Setting(Setting.PASSWORD_KEY, password1));				
-				Toast.makeText(this, "logged in as " + username, Toast.LENGTH_LONG).show();
+				getHelper().getSettingDao().create(new Setting(Setting.PASSWORD_KEY, Utils.md5(password1)));				
 			} catch (SQLException e) {
 				Log.e(TAG, "Oops, SQLException:", e);
 			}
