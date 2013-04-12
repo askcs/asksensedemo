@@ -19,4 +19,6 @@
     <string name="enter_username">enter a valid username</string>
     <string name="enter_password">enter a valid password</string>
 
+    <string name="logged_in_as">logged in as: %1$s</string>
+
 </resources>

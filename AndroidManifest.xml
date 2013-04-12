@@ -28,6 +28,8 @@
             android:name=".LoginActivity"
             android:label="@string/app_name" />
 
+        <service android:name=".ForegroundService"/>
+
     </application>
 
 </manifest>
