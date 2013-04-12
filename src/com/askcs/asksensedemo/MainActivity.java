@@ -38,7 +38,11 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(this, LoginActivity.class));
                 finish();
             }
-        } catch (SQLException e) {
+            else {
+                startService(new Intent(this, ForegroundService.class));
+            }
+        }
+        catch (SQLException e) {
             Log.e(TAG, "Oops: ", e);
         }
 
@@ -52,8 +56,6 @@ public class MainActivity extends Activity {
 
         init(R.id.id_radio_group_presence, R.id.id_radio_presence_enabled,
                 R.id.id_radio_presence_disabled, Setting.PRESENCE_ENABLED_KEY);
-
-        startService(new Intent(this, ForegroundService.class));
     }
 
     @Override
