@@ -10,7 +10,46 @@
         android:layout_height="fill_parent"
         android:padding="20dp">
 
-        <!-- activity -->
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="@string/explanation"
+            android:paddingBottom="15dp"
+            android:textSize="16dp"/>
+
+        <CheckBox
+            android:id="@+id/id_checkbox_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/activity"
+            android:paddingLeft="60dp"
+            android:textSize="25dp"/>
+
+        <CheckBox
+            android:id="@+id/id_checkbox_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/location"
+            android:paddingLeft="60dp"
+            android:textSize="25dp"/>
+
+        <CheckBox
+            android:id="@+id/id_checkbox_presence"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/presence"
+            android:paddingLeft="60dp"
+            android:textSize="25dp"/>
+
+    </LinearLayout>
+
+    <!--
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:padding="20dp">
+
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -41,7 +80,6 @@
 
         </RadioGroup>
 
-        <!-- location -->
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -73,7 +111,6 @@
 
         </RadioGroup>
 
-        <!-- presence -->
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -106,5 +143,5 @@
         </RadioGroup>
 
     </LinearLayout>
-
+    -->
 </ScrollView>

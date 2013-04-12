@@ -3,9 +3,14 @@
 
     <string name="app_name">Ask Sense Demo</string>
 
-    <string name="activity">activity</string>
-    <string name="location">location</string>
-    <string name="presence">presence</string>
+    <string name="explanation">
+        Enable or disable sensors below. Upon changes in one of the enabled sensors,
+        you will receive a notification in the top bar of your phone.
+    </string>
+
+    <string name="activity">activity sensor</string>
+    <string name="location">location sensor</string>
+    <string name="presence">presence sensor</string>
 
     <string name="enabled">enabled</string>
     <string name="disabled">disabled</string>
