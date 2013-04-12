@@ -36,8 +36,8 @@ public class LoginActivity extends Activity {
         final Button signin = (Button) super.findViewById(R.id.id_signin);
 
         // TODO remove after testing:
-        username.setText(getString(R.string.sense_username));
-        password.setText(getString(R.string.sense_password));
+        //username.setText(getString(R.string.sense_username));
+        //password.setText(getString(R.string.sense_password));
 
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
