@@ -28,6 +28,7 @@
     <string name="enter_password">enter a valid password</string>
 
     <string name="logged_in_as">logged in as: %1$s</string>
-    <string name="confirm_logout">logout?</string>
+    <string name="confirm_logout">Really logout?</string>
+    <string name="app_started">Ask Sense Demo started</string>
 
 </resources>

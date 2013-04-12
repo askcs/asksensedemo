@@ -10,6 +10,11 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.util.Log;
 
+import com.askcs.asksensedemo.database.DatabaseHelper;
+import com.askcs.asksensedemo.model.Setting;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.Dao;
+import java.sql.SQLException;
 import java.util.HashSet;
 
 public class ForegroundService extends Service {
@@ -19,6 +24,7 @@ public class ForegroundService extends Service {
     private static final int SERVICE_ID = 45167812;
     private NotificationManager notificationManager = null;
     private boolean isRunning = false;
+    private DatabaseHelper databaseHelper = null;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -73,7 +79,7 @@ public class ForegroundService extends Service {
         Resources res = getResources();
 
         Notification notification = new Notification(
-                R.drawable.ask_icon_gray, "FOO",
+                R.drawable.ask_icon_gray, getString(R.string.app_started),
                 System.currentTimeMillis());
 
         Intent gotoIntent = new Intent(this , MainActivity.class);
@@ -83,7 +89,16 @@ public class ForegroundService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, gotoIntent, 0);
 
-        String user = "???";
+        String user = "unknown";
+
+        try {
+            Dao<Setting, String> dao = getHelper().getSettingDao();
+            Setting userSetting = dao.queryForId(Setting.USER_KEY);
+            user = userSetting.getValue();
+        }
+        catch (SQLException e) {
+            Log.e(TAG, "Oops: ", e);
+        }
 
         notification.setLatestEventInfo(this, res.getString(R.string.app_name),
                 res.getString(R.string.logged_in_as, user), pendingIntent);
@@ -94,5 +109,14 @@ public class ForegroundService extends Service {
         notificationManager.notify(SERVICE_ID, notification);
 
         return notification;
+    }
+
+    public DatabaseHelper getHelper() {
+
+        if (databaseHelper == null) {
+            databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+        }
+
+        return databaseHelper;
     }
 }
