@@ -62,6 +62,19 @@
             android:paddingLeft="60dp"
             android:textSize="25dp"/>
 
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp">
+
+            <Button
+                android:id="@+id/id_logout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/logout"/>
+
+        </RelativeLayout>
+
     </LinearLayout>
 
 </ScrollView>

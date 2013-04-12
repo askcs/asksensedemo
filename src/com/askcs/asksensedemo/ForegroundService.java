@@ -16,7 +16,7 @@ public class ForegroundService extends Service {
 
     private static final String TAG = ForegroundService.class.getName();
 
-    private static final int SERVICE_ID = 424242;
+    private static final int SERVICE_ID = 45167812;
     private NotificationManager notificationManager = null;
     private boolean isRunning = false;
 
@@ -52,6 +52,14 @@ public class ForegroundService extends Service {
         }
 
         return START_NOT_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+
+        super.onDestroy();
+
+        Log.d(TAG, "stopping service");
     }
 
     @SuppressWarnings("deprecation")

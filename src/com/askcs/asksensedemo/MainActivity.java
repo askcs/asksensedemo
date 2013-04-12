@@ -1,10 +1,14 @@
 package com.askcs.asksensedemo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.LoginFilter;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -30,6 +34,8 @@ public class MainActivity extends Activity {
 
         final Dao<Setting, String> dao = this.getHelper().getSettingDao();
 
+        final Intent serviceIntent = new Intent(this, ForegroundService.class);
+
         try {
             final Setting userSetting = dao.queryForId(Setting.USER_KEY);
 
@@ -40,7 +46,7 @@ public class MainActivity extends Activity {
                 finish();
             }
             else {
-                startService(new Intent(this, ForegroundService.class));
+                startService(serviceIntent);
             }
         }
         catch (SQLException e) {
@@ -54,6 +60,43 @@ public class MainActivity extends Activity {
         init(R.id.id_checkbox_location, Setting.LOCATION_ENABLED_KEY);
 
         init(R.id.id_checkbox_presence, Setting.PRESENCE_ENABLED_KEY);
+
+        Button logout = (Button) findViewById(R.id.id_logout);
+
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setMessage(R.string.confirm_logout)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                try {
+                                    Setting userSetting = dao.queryForId(Setting.USER_KEY);
+                                    Setting passwordSetting = dao.queryForId(Setting.PASSWORD_KEY);
+
+                                    userSetting.setValue("");
+                                    passwordSetting.setValue("");
+
+                                    dao.update(userSetting);
+                                    dao.update(passwordSetting);
+
+                                    MainActivity.this.stopService(serviceIntent);
+                                    MainActivity.this.finish();
+                                }
+                                catch (SQLException e) {
+                                    Log.e(TAG, "Oops: ", e);
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // Cancelled, do nothing.
+                            }
+                        })
+                        .create()
+                        .show();
+            }
+        });
     }
 
     @Override
