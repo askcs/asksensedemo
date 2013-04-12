@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Ask Sense Demo</string>
+
+    <string name="activity">activity</string>
+    <string name="location">location</string>
+    <string name="presence">presence</string>
+
+    <string name="enabled">enabled</string>
+    <string name="disabled">disabled</string>
+
+    <string name="username">username</string>
+    <string name="password">password</string>
+    <string name="login">Sense Login</string>
+    <string name="signin">sign in</string>
+    <string name="cancel">cancel</string>
+
+    <string name="enter_username">enter a valid username</string>
+    <string name="enter_password">enter a valid password</string>
+
+</resources>

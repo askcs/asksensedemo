@@ -1,0 +1,17 @@
+#
+# generated on 2013/04/12 01:41:18
+#
+# --table-start--
+dataClass=com.askcs.asksensedemo.model.Setting
+tableName=settings
+# --table-fields-start--
+# --field-start--
+fieldName=key
+id=true
+# --field-end--
+# --field-start--
+fieldName=value
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
