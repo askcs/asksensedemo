@@ -45,6 +45,7 @@ public class LoginActivity extends Activity {
 		// >>> TODO remove after testing
 		usernameText.setText(super.getString(R.string.sense_username));
 		password1Text.setText(super.getString(R.string.sense_password));
+		
 		loginButton.setEnabled(true);
 		// <<< TODO remove after testing
 		

@@ -4,10 +4,13 @@ import java.sql.SQLException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.json.JSONArray;
+
 import com.askcs.asksensedemo.model.Setting;
 import com.j256.ormlite.dao.Dao;
 
 import android.util.Log;
+import android.widget.Toast;
 
 public class RestTimerTask extends TimerTask {
 
@@ -62,6 +65,12 @@ public class RestTimerTask extends TimerTask {
 		
 		Log.d(TAG, "checkActivity:=" + checkActivity + ", checkLocation:=" + 
 				checkLocation + ", checkPresence:=" + checkPresence);
+		
+		if(checkActivity) {
+			JSONArray data = service.getData("Activity");
+			Log.d(TAG, "Activity.data=" + data);
+			Toast.makeText(service, "Activity.data=" + data, Toast.LENGTH_LONG).show();
+		}
 	}
 
 	public void start() {
