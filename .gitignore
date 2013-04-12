@@ -1,5 +1,15 @@
+# generated and compiled folders
 bin/
 gen/
 out/
+
+# local files
 local.properties
 res/values/private.xml
+
+# IDE files
+.classpath
+.project
+.settings/
+*.iml
+.idea/
