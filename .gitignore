@@ -1,9 +1,0 @@
-# exclude generated and compile folders
-bin/
-gen/
-
-# exclude log files
-*.log
-
-# some login info used for testing
-res/values/private_constants.xml
