@@ -1,5 +1,5 @@
 #
-# generated on 2013/04/12 01:41:18
+# generated on 2013/04/13 10:58:11
 #
 # --table-start--
 dataClass=com.askcs.asksensedemo.model.Setting
@@ -11,6 +11,23 @@ id=true
 # --field-end--
 # --field-start--
 fieldName=value
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.askcs.asksensedemo.model.State
+tableName=state
+# --table-fields-start--
+# --field-start--
+fieldName=state
+id=true
+# --field-end--
+# --field-start--
+fieldName=value
+# --field-end--
+# --field-start--
+fieldName=timestamp
 # --field-end--
 # --table-fields-end--
 # --table-end--

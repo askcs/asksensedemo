@@ -1,5 +1,6 @@
 package com.askcs.asksensedemo.database;
 
+import com.askcs.asksensedemo.model.State;
 import java.sql.SQLException;
 
 import android.content.Context;
@@ -12,6 +13,7 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import java.util.Date;
 
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
@@ -21,6 +23,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final int DATABASE_VERSION = 1;
 
 	private Dao<Setting, String> settingDao = null;
+    private Dao<State, String> stateDao = null;
 
 	public DatabaseHelper(Context context) {
 		
@@ -38,14 +41,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.createTable(connectionSource, tableClass);				
 			}
 
-            // Add some default values.
+            // Add some default settings and states.
 
             this.getSettingDao().create(new Setting(Setting.ACTIVITY_ENABLED_KEY, String.valueOf(Boolean.FALSE)));
             this.getSettingDao().create(new Setting(Setting.LOCATION_ENABLED_KEY, String.valueOf(Boolean.FALSE)));
             this.getSettingDao().create(new Setting(Setting.PRESENCE_ENABLED_KEY, String.valueOf(Boolean.FALSE)));
-
             this.getSettingDao().create(new Setting(Setting.USER_KEY, ""));
             this.getSettingDao().create(new Setting(Setting.PASSWORD_KEY, ""));
+
+            this.getStateDao().create(new State(State.ACTIVITY_KEY, "unknown", new Date().getTime()));
+            this.getStateDao().create(new State(State.LOCATION_KEY, "unknown", new Date().getTime()));
+            this.getStateDao().create(new State(State.PRESENCE_KEY, "unknown", new Date().getTime()));
 
 		} catch (SQLException e) {
 			Log.e(TAG, "Can't create database", e);
@@ -73,6 +79,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		
 		return settingDao;
 	}
+
+    public Dao<State, String> getStateDao() {
+
+        if (stateDao == null) {
+            try {
+                stateDao = getDao(State.class);
+            } catch (SQLException e) {
+                Log.e(TAG, "Oops: ", e);
+                stateDao = null;
+            }
+        }
+
+        return stateDao;
+    }
 
 	@Override
 	public void close() {
