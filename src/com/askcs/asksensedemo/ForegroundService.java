@@ -12,18 +12,22 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-import android.widget.Toast;
 import com.askcs.asksensedemo.database.DatabaseHelper;
 import com.askcs.asksensedemo.model.Setting;
+import com.askcs.asksensedemo.model.State;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import java.sql.SQLException;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import nl.sense_os.platform.SensePlatform;
 import nl.sense_os.service.ISenseService;
 import nl.sense_os.service.ISenseServiceCallback;
-import nl.sense_os.service.commonsense.SenseApi;
 import nl.sense_os.service.constants.SensePrefs;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ForegroundService extends Service implements ServiceConnection {
 
@@ -31,6 +35,7 @@ public class ForegroundService extends Service implements ServiceConnection {
 
     private static final int SERVICE_ID = 45167812;
     private NotificationManager notificationManager = null;
+    private Timer timer = null;
     private boolean isRunning = false;
     private DatabaseHelper databaseHelper = null;
 
@@ -96,6 +101,8 @@ public class ForegroundService extends Service implements ServiceConnection {
 
             Log.d(TAG, "starting service");
 
+            timer = new Timer();
+
             sensePlatform = new SensePlatform(this, this);
 
             try {
@@ -125,6 +132,10 @@ public class ForegroundService extends Service implements ServiceConnection {
         super.onDestroy();
 
         isRunning = false;
+
+        if(timer != null) {
+            timer.cancel();
+        }
 
         if(sensePlatform != null) {
 
@@ -198,6 +209,30 @@ public class ForegroundService extends Service implements ServiceConnection {
             // -1 := often (buffer 1 min)
             // -2 := real time (every new data point is uploaded immediately)
             service.setPrefString(SensePrefs.Main.SYNC_RATE, "-2");
+
+            timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+
+                            // TODO check if ACTIVITY_KEY is set in the DB to be polled
+
+                            JSONArray data = sensePlatform.getData(State.ACTIVITY_KEY, false, 1);
+
+                            for(int i = 0; i < data.length(); i++) {
+                                JSONObject obj = (JSONObject)data.get(i);
+                                State state = new State(State.ACTIVITY_KEY, obj.getString("value"), obj.getLong("timestamp"));
+                                Log.d(TAG, "state -> " + state);
+                            }
+                        }
+                        catch (JSONException e) {
+                            Log.e(TAG, "Oops: ", e);
+                        }
+                    }
+                },
+                2000L, // delay
+                10000L // pause
+            );
 
         } catch (Exception e) {
             Log.e(TAG, "Exception while starting sense library.", e);
