@@ -31,13 +31,19 @@ public class LoginActivity extends Activity {
 
         super.setContentView(R.layout.login);
 ;
+        Bundle bundle = getIntent().getExtras();
+
+        if(bundle != null && bundle.containsKey("message")) {
+            Toast.makeText(this, (String)bundle.get("message"), Toast.LENGTH_LONG).show();
+        }
+
         final EditText username = (EditText) super.findViewById(R.id.id_username);
         final EditText password = (EditText) super.findViewById(R.id.id_password);
         final Button signin = (Button) super.findViewById(R.id.id_signin);
 
         // TODO remove after testing:
-        //username.setText(getString(R.string.sense_username));
-        //password.setText(getString(R.string.sense_password));
+        username.setText(getString(R.string.sense_username));
+        password.setText(getString(R.string.sense_password));
 
         signin.setOnClickListener(new View.OnClickListener() {
             @Override

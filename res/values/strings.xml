@@ -24,11 +24,35 @@
     <string name="yes">yes</string>
     <string name="no">no</string>
 
+    <string name="no_login_connection">Could not login. Check your connection.</string>
+    <string name="no_login_credentials">Invalid username or password.</string>
+    <string name="no_login_other">Could not login. Unexpected result: %1$s</string>
+
     <string name="enter_username">enter a valid username</string>
     <string name="enter_password">enter a valid password</string>
 
     <string name="logged_in_as">logged in as: %1$s</string>
     <string name="confirm_logout">Really logout?</string>
     <string name="app_started">Ask Sense Demo started</string>
+
+    <!-- <SENSE> -->
+    <!-- OVERRIDE INTENT ACTIONS FOR BUNDLED SENSE PLATFORM (ALSO CHANGE IN MANIFEST!!) -->
+    <string name="action_sense_service">nl.sense_os.demo.SENSE_SERVICE</string>
+    <string name="action_sense_new_data">nl.sense_os.demo.NEW_DATA</string>
+    <string name="action_sense_send_data">nl.sense_os.demo.SEND_DATA</string>
+    <string name="action_sense_alive_check_alarm">nl.sense_os.CHECK_ALIVE</string>
+    <string name="action_sense_data_transmit_alarm">nl.sense_os.demo.TRANSMIT_DATA</string>
+    <string name="action_sense_new_requirements">nl.sense_os.demo.NEW_REQUIREMENTS</string>
+    <string name="action_widget_update">nl.sense_os.demo.UPDATE_APP_WIDGET</string>
+    <string name="local_storage_authority">nl.sense_os.demo.LocalStorage</string>
+
+    <!-- NOTIFICATION RESOURCES -->
+    <string name="stat_notify_action">nl.sense_os.demo.NOTIFICATION</string>
+    <string name="stat_notify_title">Sense Demo</string>
+    <string name="stat_notify_content_off_loggedin">Meting gestopt, ingelogd als \'%s\'</string>
+    <string name="stat_notify_content_off_loggedout">Meting gestopt, geen verbinding met server</string>
+    <string name="stat_notify_content_on_loggedin">"Meting actief, ingelogd als \'%s\'"</string>
+    <string name="stat_notify_content_on_loggedout">Meting actief, geen verbinding met server</string>
+    <!-- </SENSE> -->
 
 </resources>
