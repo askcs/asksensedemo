@@ -43,24 +43,45 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/activity"
-            android:paddingLeft="60dp"
             android:textSize="25dp"/>
+
+        <TextView
+            android:id="@+id/id_txt_status_activity"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:paddingLeft="48dp"
+            android:paddingBottom="15dp"
+            android:textSize="14dp"/>
 
         <CheckBox
             android:id="@+id/id_checkbox_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/location"
-            android:paddingLeft="60dp"
             android:textSize="25dp"/>
+
+        <TextView
+            android:id="@+id/id_txt_status_location"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:paddingLeft="48dp"
+            android:paddingBottom="15dp"
+            android:textSize="14dp"/>
 
         <CheckBox
             android:id="@+id/id_checkbox_presence"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/presence"
-            android:paddingLeft="60dp"
             android:textSize="25dp"/>
+
+        <TextView
+            android:id="@+id/id_txt_status_presence"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:paddingLeft="48dp"
+            android:paddingBottom="15dp"
+            android:textSize="14dp"/>
 
         <RelativeLayout
             android:layout_width="fill_parent"

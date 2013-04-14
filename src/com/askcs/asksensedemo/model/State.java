@@ -3,13 +3,16 @@ package com.askcs.asksensedemo.model;
 import com.j256.ormlite.field.DatabaseField;
 import java.text.SimpleDateFormat;
 
+/**
+ *
+ */
 public class State {
 
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
 
     public static final String ACTIVITY_KEY = "Activity";
     public static final String LOCATION_KEY = "Location";
-    public static final String PRESENCE_KEY = "???";
+    public static final String PRESENCE_KEY = "Reachability";
 
     @DatabaseField(id=true)
     private String state;
@@ -78,7 +81,6 @@ public class State {
 
     @Override
     public String toString() {
-        return String.format("{state=%s, value=%s, time=%s}",
-                state, value, FORMATTER.format(timestamp));
+        return String.format("%s: %s", FORMATTER.format(timestamp), value);
     }
 }

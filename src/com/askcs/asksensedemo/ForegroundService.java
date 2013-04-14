@@ -1,9 +1,6 @@
 package com.askcs.asksensedemo;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
+import android.app.*;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -26,7 +23,6 @@ import nl.sense_os.service.ISenseService;
 import nl.sense_os.service.ISenseServiceCallback;
 import nl.sense_os.service.constants.SensePrefs;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ForegroundService extends Service implements ServiceConnection {
@@ -137,16 +133,19 @@ public class ForegroundService extends Service implements ServiceConnection {
             timer.cancel();
         }
 
-        if(sensePlatform != null) {
+        synchronized (this.sensePlatform) {
 
-            try {
-                sensePlatform.logout();
-            }
-            catch (RemoteException e) {
-                Log.e(TAG, "could not logout of Sense: ", e);
-            }
+            if(sensePlatform != null) {
 
-            sensePlatform.close();
+                try {
+                    sensePlatform.logout();
+                }
+                catch (RemoteException e) {
+                    Log.e(TAG, "could not logout of Sense: ", e);
+                }
+
+                sensePlatform.close();
+            }
         }
 
         Log.d(TAG, "stopping service");
@@ -163,7 +162,7 @@ public class ForegroundService extends Service implements ServiceConnection {
             // Log in (you only need to do this once, Sense will remember the login).
             // This is an asynchronous call, we get a call to the callback object when the login is
             // complete.
-            sensePlatform.login(userSetting.getValue(), passwordSetting.getValue(), callback);
+            getSensePlatform().login(userSetting.getValue(), passwordSetting.getValue(), callback);
 
         } catch (Exception e) {
             Log.e(TAG, "Exception while setting up Sense library.", e);
@@ -172,29 +171,33 @@ public class ForegroundService extends Service implements ServiceConnection {
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // not used
     }
 
     private void onLoggedIn() {
         try {
             // start sensing
-            ISenseService service = sensePlatform.getService();
+            ISenseService service = getSensePlatform().getService();
             service.toggleMain(true);
-            service.toggleAmbience(true);
+            //service.toggleAmbience(true);
             service.toggleLocation(true);
+            service.toggleMotion(true);
+            service.togglePhoneState(true);
+            //service.toggleDeviceProx(true);
+            //service.toggleExternalSensors(true);
 
             // turn off some specific sensors
-            service.setPrefBool(SensePrefs.Main.Ambience.LIGHT, false);
-            service.setPrefBool(SensePrefs.Main.Ambience.CAMERA_LIGHT, false);
-            service.setPrefBool(SensePrefs.Main.Ambience.PRESSURE, false);
+            //service.setPrefBool(SensePrefs.Main.Ambience.LIGHT, false);
+            //service.setPrefBool(SensePrefs.Main.Ambience.CAMERA_LIGHT, false);
+            //service.setPrefBool(SensePrefs.Main.Ambience.PRESSURE, false);
 
             // turn on specific sensors
-            service.setPrefBool(SensePrefs.Main.Ambience.MIC, true);
+            //service.setPrefBool(SensePrefs.Main.Ambience.MIC, true);
             // NOTE: spectrum might be too heavy for the phone or consume too much energy
-            service.setPrefBool(SensePrefs.Main.Ambience.AUDIO_SPECTRUM, true);
-            service.setPrefBool(SensePrefs.Main.Location.GPS, true);
-            service.setPrefBool(SensePrefs.Main.Location.NETWORK, true);
-            service.setPrefBool(SensePrefs.Main.Location.AUTO_GPS, true);
+            //service.setPrefBool(SensePrefs.Main.Ambience.AUDIO_SPECTRUM, true);
+            //service.setPrefBool(SensePrefs.Main.Location.GPS, true);
+            //service.setPrefBool(SensePrefs.Main.Location.NETWORK, true);
+            //service.setPrefBool(SensePrefs.Main.Location.AUTO_GPS, true);
 
             // set how often to sample
             // 1 := rarely (~every 15 min)
@@ -211,21 +214,77 @@ public class ForegroundService extends Service implements ServiceConnection {
             service.setPrefString(SensePrefs.Main.SYNC_RATE, "-2");
 
             timer.schedule(new TimerTask() {
+
+                    private void check(boolean doCheck, String stateKey) {
+
+                        if(doCheck) {
+
+                            Dao<State, String> stateDao = ForegroundService.this.getHelper().getStateDao();
+
+                            try {
+                                JSONArray data = getSensePlatform().getData(stateKey, false, 1);
+                                State last = stateDao.queryForId(stateKey);
+
+                                if(data != null && data.length() > 0) {
+
+                                    JSONObject obj = (JSONObject)data.get(0);
+                                    State state = new State(stateKey, obj.getString("value"), obj.getLong("timestamp"));
+
+                                    Log.d(TAG, stateKey + " :: last state -> " + state);
+
+                                    if(state.equals(last)) {
+                                        Log.d(TAG, "no state change between last=[" + last + "] and state=[" + state + "]");
+                                    }
+                                    else {
+
+                                        String message = String.format("%s -> %s", last.getValue(), state.getValue());
+
+                                        Log.i(TAG, message);
+
+                                        last.setValue(state.getValue());
+                                        last.setTimestamp(state.getTimestamp());
+                                        stateDao.update(last);
+
+                                        sendNotification(message);
+                                    }
+                                }
+                            } catch(Exception e) {
+                                Log.e(TAG, "Oops: ", e);
+                            }
+                        }
+                        else {
+                            Log.d(TAG, "skipping " + stateKey);
+                        }
+                    }
+
                     @Override
                     public void run() {
                         try {
 
-                            // TODO check if ACTIVITY_KEY is set in the DB to be polled
+                            Dao<Setting, String> settingDao = ForegroundService.this.getHelper().getSettingDao();
 
-                            JSONArray data = sensePlatform.getData(State.ACTIVITY_KEY, false, 1);
+                            boolean checkActivity = false;
+                            boolean checkLocation = false;
+                            boolean checkPresence = false;
 
-                            for(int i = 0; i < data.length(); i++) {
-                                JSONObject obj = (JSONObject)data.get(i);
-                                State state = new State(State.ACTIVITY_KEY, obj.getString("value"), obj.getLong("timestamp"));
-                                Log.d(TAG, "state -> " + state);
+                            try {
+                                Setting activitySetting = settingDao.queryForId(Setting.ACTIVITY_ENABLED_KEY);
+                                Setting locationSetting = settingDao.queryForId(Setting.LOCATION_ENABLED_KEY);
+                                Setting presenceSetting = settingDao.queryForId(Setting.PRESENCE_ENABLED_KEY);
+
+                                checkActivity = activitySetting.getValue().equals(String.valueOf(Boolean.TRUE));
+                                checkLocation = locationSetting.getValue().equals(String.valueOf(Boolean.TRUE));
+                                checkPresence = presenceSetting.getValue().equals(String.valueOf(Boolean.TRUE));
                             }
+                            catch (SQLException e) {
+                                Log.e(TAG, "Oops: ", e);
+                            }
+
+                            check(checkActivity, State.ACTIVITY_KEY);
+                            check(checkLocation, State.LOCATION_KEY);
+                            check(checkPresence, State.PRESENCE_KEY);
                         }
-                        catch (JSONException e) {
+                        catch (Exception e) {
                             Log.e(TAG, "Oops: ", e);
                         }
                     }
@@ -235,8 +294,12 @@ public class ForegroundService extends Service implements ServiceConnection {
             );
 
         } catch (Exception e) {
-            Log.e(TAG, "Exception while starting sense library.", e);
+            Log.e(TAG, "there's a problem while starting sense library: ", e);
         }
+    }
+
+    protected synchronized SensePlatform getSensePlatform() {
+        return this.sensePlatform;
     }
 
     @SuppressWarnings("deprecation")
@@ -280,6 +343,34 @@ public class ForegroundService extends Service implements ServiceConnection {
         notificationManager.notify(SERVICE_ID, notification);
 
         return notification;
+    }
+
+    @SuppressWarnings("deprecation")
+    public void sendNotification(String message) {
+
+        if(notificationManager == null) {
+            Log.w(TAG, "notificationManager == null");
+        }
+
+        Resources res = getResources();
+
+        Notification notification = new Notification(
+                R.drawable.ask_icon_red, "state change",
+                System.currentTimeMillis());
+
+        Intent gotoIntent = new Intent(this , MainActivity.class);
+
+        gotoIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0, gotoIntent, 0);
+
+        notification.setLatestEventInfo(this, res.getString(R.string.app_name),
+                message, pendingIntent);
+
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        notificationManager.notify(Long.valueOf(System.currentTimeMillis()).hashCode(), notification);
     }
 
     public DatabaseHelper getHelper() {

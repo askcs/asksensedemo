@@ -8,12 +8,10 @@ import android.os.Bundle;
 import android.text.LoginFilter;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.*;
 import com.askcs.asksensedemo.database.DatabaseHelper;
 import com.askcs.asksensedemo.model.Setting;
+import com.askcs.asksensedemo.model.State;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
@@ -32,12 +30,12 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
-        final Dao<Setting, String> dao = this.getHelper().getSettingDao();
+        final Dao<Setting, String> settingDao = this.getHelper().getSettingDao();
 
         final Intent serviceIntent = new Intent(this, ForegroundService.class);
 
         try {
-            final Setting userSetting = dao.queryForId(Setting.USER_KEY);
+            final Setting userSetting = settingDao.queryForId(Setting.USER_KEY);
 
             Log.d(TAG, "userSetting=" + userSetting);
 
@@ -61,9 +59,7 @@ public class MainActivity extends Activity {
 
         init(R.id.id_checkbox_presence, Setting.PRESENCE_ENABLED_KEY);
 
-        Button logout = (Button) findViewById(R.id.id_logout);
-
-        logout.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.id_logout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -71,14 +67,14 @@ public class MainActivity extends Activity {
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 try {
-                                    Setting userSetting = dao.queryForId(Setting.USER_KEY);
-                                    Setting passwordSetting = dao.queryForId(Setting.PASSWORD_KEY);
+                                    Setting userSetting = settingDao.queryForId(Setting.USER_KEY);
+                                    Setting passwordSetting = settingDao.queryForId(Setting.PASSWORD_KEY);
 
                                     userSetting.setValue("");
                                     passwordSetting.setValue("");
 
-                                    dao.update(userSetting);
-                                    dao.update(passwordSetting);
+                                    settingDao.update(userSetting);
+                                    settingDao.update(passwordSetting);
 
                                     MainActivity.this.stopService(serviceIntent);
                                     MainActivity.this.finish();
@@ -97,6 +93,34 @@ public class MainActivity extends Activity {
                         .show();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        try {
+            // Get the most recent states and update the GUI text views.
+
+            final Dao<State, String> stateDao = this.getHelper().getStateDao();
+
+            State activityState = stateDao.queryForId(State.ACTIVITY_KEY);
+            State locationState = stateDao.queryForId(State.LOCATION_KEY);
+            State presenceState = stateDao.queryForId(State.PRESENCE_KEY);
+
+            TextView txtActivity = (TextView) super.findViewById(R.id.id_txt_status_activity);
+            txtActivity.setText(activityState.toString());
+
+            TextView txtLocation = (TextView) super.findViewById(R.id.id_txt_status_location);
+            txtLocation.setText(locationState.toString());
+
+            TextView txtPresence = (TextView) super.findViewById(R.id.id_txt_status_presence);
+            txtPresence.setText(presenceState.toString());
+        }
+        catch (SQLException e) {
+            Log.e(TAG, "Oops: ", e);
+        }
     }
 
     @Override
