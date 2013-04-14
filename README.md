@@ -7,10 +7,11 @@ A small demo app to test [Sense's Android plugin](https://github.com/senseobserv
 ### IDE
 
 There is no officially released APK of this demo App. So to install
-this on your phone, clone the Sense Android Library and this project:
+this on your phone, clone the branch `getdata-fix` of the Sense Android 
+Library, and clone this project too:
 
 ```bash
-git clone https://github.com/bartkiers/sense-android-library
+git clone https://github.com/bartkiers/sense-android-library -b getdata-fix
 git clone https://github.com/askcs/asksensedemo.git
 ```
 
@@ -22,7 +23,7 @@ run the App on your phone.
 Or from the command line, using Ant:
 
 ```bash
-git clone https://github.com/bartkiers/sense-android-library
+git clone https://github.com/bartkiers/sense-android-library -b getdata-fix
 git clone https://github.com/askcs/asksensedemo.git
 cd asksensedemo
 ```
