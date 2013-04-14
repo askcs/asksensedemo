@@ -51,8 +51,11 @@ connected, of course). Launch the App manually, it is called
 To run the App, you need a Common-Sense account. If you haven't got one, register
 one here: https://accounts.sense-os.nl/
 
-<br>
+## Configure state sensors
+
+`TODO` 
+
 <br>
 ---------------------------------------------
 
-<sup>*</sup> ;)
+<sup>*</sup> `;)`
