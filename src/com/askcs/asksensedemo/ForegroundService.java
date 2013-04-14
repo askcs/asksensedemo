@@ -222,10 +222,14 @@ public class ForegroundService extends Service implements ServiceConnection {
                             Dao<State, String> stateDao = ForegroundService.this.getHelper().getStateDao();
 
                             try {
-                                JSONArray data = getSensePlatform().getData(stateKey, false, 1);
+                                int limit = 1;
+                                JSONArray data = getSensePlatform().getData(stateKey, false, limit);
+
+                                Log.d(TAG, "--> limit=" + limit + ", data.length=" + data.length());
+
                                 State last = stateDao.queryForId(stateKey);
 
-                                if(data != null && data.length() > 0) {
+                                if(data.length() > 0) {
 
                                     JSONObject obj = (JSONObject)data.get(0);
                                     State state = new State(stateKey, obj.getString("value"), obj.getLong("timestamp"));
