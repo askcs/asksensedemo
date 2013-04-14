@@ -15,7 +15,7 @@ git clone https://github.com/bartkiers/sense-android-library -b getdata-fix
 git clone https://github.com/askcs/asksensedemo.git
 ```
 
-import it in your [favorite IDE](http://www.jetbrains.com/idea/) and
+import it in your [favorite IDE](http://www.jetbrains.com/idea/)<sup>*</sup> and
 run the App on your phone.
 
 ### Command line
@@ -50,3 +50,7 @@ connected, of course). Launch the App manually, it is called
 
 To run the App, you need a Common-Sense account. If you haven't got one, register
 one here: https://accounts.sense-os.nl/
+
+---------------------------------------------
+
+<sup>*</sup> ;)
