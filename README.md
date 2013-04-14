@@ -36,7 +36,7 @@ sdk.dir=/usr/local/android/sdk
 ```
 
 Once that is done, execute the following target from the root of the
-project:
+`asksensedemo` project:
 
 ```
 ant debug install
