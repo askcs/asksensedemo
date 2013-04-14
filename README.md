@@ -45,3 +45,8 @@ ant debug install
 The App should now be installed on your phone (if it was properly
 connected, of course). Launch the App manually, it is called
 `Ask Sense App`.
+
+## Run the App
+
+To run the App, you need a Common-Sense account. If you haven't got one, register
+one here: https://accounts.sense-os.nl/
