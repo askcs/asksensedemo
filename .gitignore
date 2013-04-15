@@ -3,9 +3,10 @@ bin/
 gen/
 out/
 
-# local files
+# local files/folders
 local.properties
 res/values/private.xml
+keystore/
 
 # IDE files
 .classpath
