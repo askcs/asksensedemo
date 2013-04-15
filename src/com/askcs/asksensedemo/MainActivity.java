@@ -34,23 +34,6 @@ public class MainActivity extends Activity {
 
         final Intent serviceIntent = new Intent(this, ForegroundService.class);
 
-        try {
-            final Setting userSetting = settingDao.queryForId(Setting.USER_KEY);
-
-            Log.d(TAG, "userSetting=" + userSetting);
-
-            if(userSetting.getValue().isEmpty()) {
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
-            }
-            else {
-                startService(serviceIntent);
-            }
-        }
-        catch (SQLException e) {
-            Log.e(TAG, "Oops: ", e);
-        }
-
         super.setContentView(R.layout.main);
 
         init(R.id.id_checkbox_activity, Setting.ACTIVITY_ENABLED_KEY);
@@ -99,6 +82,27 @@ public class MainActivity extends Activity {
     protected void onResume() {
 
         super.onResume();
+
+        final Dao<Setting, String> settingDao = this.getHelper().getSettingDao();
+
+        final Intent serviceIntent = new Intent(this, ForegroundService.class);
+
+        try {
+            final Setting loggedInSetting = settingDao.queryForId(Setting.LOGGED_IN_KEY);
+
+            Log.d(TAG, "loggedInSetting=" + loggedInSetting);
+
+            if(!loggedInSetting.getValue().equals(String.valueOf(Boolean.TRUE))) {
+                startActivity(new Intent(this, LoginActivity.class));
+                finish();
+            }
+            else {
+                startService(serviceIntent);
+            }
+        }
+        catch (SQLException e) {
+            Log.e(TAG, "Oops: ", e);
+        }
 
         try {
             // Get the most recent states and update the GUI text views.

@@ -11,6 +11,15 @@
         android:layout_gravity="center_horizontal|center_vertical">
 
         <TextView
+            android:id="@+id/id_error"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingLeft="5dp"
+            android:textColor="@color/red"
+            android:textSize="14dp"/>
+
+        <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/login"

@@ -8,6 +8,7 @@ public class Setting {
 	
 	public static final String USER_KEY = "user";
 	public static final String PASSWORD_KEY = "password";
+    public static final String LOGGED_IN_KEY = "logged_in";
 	public static final String ACTIVITY_ENABLED_KEY = "activity_enabled";
 	public static final String LOCATION_ENABLED_KEY = "location_enabled";
 	public static final String PRESENCE_ENABLED_KEY = "presence_enabled";

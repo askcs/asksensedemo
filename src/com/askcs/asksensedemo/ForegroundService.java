@@ -64,7 +64,18 @@ public class ForegroundService extends Service implements ServiceConnection {
             if(!loginOK) {
                 Log.w(TAG, "could not login: " + message);
 
-                Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+                final Dao<Setting, String> settingDao = ForegroundService.this.getHelper().getSettingDao();
+
+                try {
+                    Setting loggedInSetting = settingDao.queryForId(Setting.LOGGED_IN_KEY);
+                    loggedInSetting.setValue(String.valueOf(Boolean.FALSE));
+                    settingDao.update(loggedInSetting);
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "Oops: ", e);
+                }
+
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("message", message);
                 getApplication().startActivity(intent);
