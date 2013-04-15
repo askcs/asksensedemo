@@ -30,6 +30,8 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
+        checkLoggedIn();
+
         final Dao<Setting, String> settingDao = this.getHelper().getSettingDao();
 
         final Intent serviceIntent = new Intent(this, ForegroundService.class);
@@ -78,11 +80,7 @@ public class MainActivity extends Activity {
         });
     }
 
-    @Override
-    protected void onResume() {
-
-        super.onResume();
-
+    private void checkLoggedIn() {
         final Dao<Setting, String> settingDao = this.getHelper().getSettingDao();
 
         final Intent serviceIntent = new Intent(this, ForegroundService.class);
@@ -103,6 +101,14 @@ public class MainActivity extends Activity {
         catch (SQLException e) {
             Log.e(TAG, "Oops: ", e);
         }
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        checkLoggedIn();
 
         try {
             // Get the most recent states and update the GUI text views.
