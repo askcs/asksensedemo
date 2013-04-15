@@ -4,10 +4,13 @@ A small demo app to test [Sense's Android plugin](https://github.com/senseobserv
 
 ## Deploy APK
 
+### Release APK
+
+A signed release APK, can be found [here](https://github.com/askcs/asksensedemo/blob/master/ask_sense_demo-release-0.1.apk).
+
 ### IDE
 
-There is no officially released APK of this demo App. So to install
-this on your phone, clone the branch `getdata-fix` of the Sense Android 
+To install a debug APK on your phone, clone the branch `getdata-fix` of the Sense Android 
 Library, and clone this project too:
 
 ```bash
