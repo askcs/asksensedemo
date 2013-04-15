@@ -7,7 +7,7 @@ A small demo app to test [Sense's Android plugin](https://github.com/senseobserv
 ### Release APK
 
 A signed release APK, can be found 
-[here](https://github.com/askcs/asksensedemo/blob/master/ask_sense_demo-release-0.1.apk?raw=true).
+[here](https://github.com/askcs/asksensedemo/blob/master/ask_sense_demo-release.apk?raw=true).
 
 ### IDE
 
