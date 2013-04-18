@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.askcs.asksensedemo.database.DatabaseHelper;
 import com.askcs.asksensedemo.model.Setting;
 import com.askcs.asksensedemo.util.Utils;
@@ -101,7 +100,6 @@ public class LoginActivity extends Activity {
 
         if (databaseHelper != null) {
             OpenHelperManager.releaseHelper();
-            databaseHelper = null;
         }
     }
 

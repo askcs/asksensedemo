@@ -62,6 +62,7 @@ public class ForegroundService extends Service implements ServiceConnection {
             }
 
             if(!loginOK) {
+
                 Log.w(TAG, "could not login: " + message);
 
                 final Dao<Setting, String> settingDao = ForegroundService.this.getHelper().getSettingDao();
@@ -80,7 +81,7 @@ public class ForegroundService extends Service implements ServiceConnection {
                 intent.putExtra("message", message);
                 getApplication().startActivity(intent);
 
-                ForegroundService.this.onDestroy();
+                stopService(new Intent(ForegroundService.this, ForegroundService.class));
             }
         }
 
@@ -132,6 +133,8 @@ public class ForegroundService extends Service implements ServiceConnection {
 
         return START_NOT_STICKY;
     }
+
+
 
     @Override
     public void onDestroy() {
@@ -305,7 +308,7 @@ public class ForegroundService extends Service implements ServiceConnection {
                     }
                 },
                 2000L, // delay
-                10000L // pause
+                getResources().getInteger(R.integer.poll_sense_seconds) * 1000L // pause
             );
 
         } catch (Exception e) {
