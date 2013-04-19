@@ -19,13 +19,25 @@ import java.sql.SQLException;
  */
 public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 
+    // The logger tag.
     private static final String TAG = LoginTask.class.getName();
 
+    // The Activity this task was executed from.
     private final Activity activity;
+
+    // A progress dialog that is shown while doing work.
     private final ProgressDialog progressDialog;
+
+    // The setting DAO.
     private final Dao<Setting, String> settingDao;
+
+    // The username.
     private final String username;
+
+    // The MD5 hash of the user's password.
     private final String passwordHash;
+
+    // The message after login (after `doInBackground()`).
     private String message = null;
 
     /**
@@ -54,6 +66,7 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Void... params) {
 
+        // Assume the login went wrong.
         boolean success = false;
 
         try {
@@ -73,6 +86,7 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
                 default:
                     message = activity.getString(R.string.no_login_other, result);
             }
+
         } catch (Exception e) {
             message = e.getMessage();
         }
