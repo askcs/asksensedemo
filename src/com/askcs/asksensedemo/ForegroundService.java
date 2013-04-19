@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
+
 import nl.sense_os.platform.SensePlatform;
 import nl.sense_os.service.ISenseService;
 import nl.sense_os.service.ISenseServiceCallback;
@@ -33,18 +34,35 @@ import static com.askcs.asksensedemo.MessageType.*;
  */
 public class ForegroundService extends Service implements ServiceConnection {
 
+    // The logger tag.
     private static final String TAG = ForegroundService.class.getName();
 
+    // The ID of this service.
     private static final int SERVICE_ID = 45167812;
-    private NotificationManager notificationManager = null;
-    private Timer timer = null;
-    private boolean isRunning = false;
-    private DatabaseHelper databaseHelper = null;
-    private SenseCallback callback = new SenseCallback();
-    private SensePlatform sensePlatform = null;
-    private Messenger serviceMessenger = null;
-    private Set<Messenger> clients = null;
 
+    // The notification manager used to send OS-notifications.
+    private NotificationManager notificationManager = null;
+
+    // The timer that schedules the Sense poll-task.
+    private Timer timer = null;
+
+    // A flag indicating this service is running.
+    private boolean isRunning = false;
+
+    // A reference to the ORM-lite DB helper.
+    private DatabaseHelper databaseHelper = null;
+
+    // A callback used to receive async updates on.
+    private SenseCallback callback = new SenseCallback();
+
+    // The sense platform.
+    private SensePlatform sensePlatform = null;
+
+    // The messenger used to bind activities upon itself.
+    private Messenger serviceMessenger = null;
+
+    // A set of activities that are bound to this service.
+    private Set<Messenger> clients = null;
 
     // A handler receiving Messages from Activities that are bound to this service.
     private static class ServiceHandler extends Handler {
@@ -55,12 +73,17 @@ public class ForegroundService extends Service implements ServiceConnection {
             reference = new WeakReference<ForegroundService>(service);
         }
 
+        /**
+         * Handles incoming messages from bound activities.
+         *
+         * @param message the incoming message.
+         */
         @Override
         public void handleMessage(Message message) {
 
             ForegroundService service = reference.get();
 
-            if(service == null) {
+            if (service == null) {
                 Log.w(TAG, "service was already destroyed, ignoring message: " + message);
                 return;
             }
@@ -143,7 +166,7 @@ public class ForegroundService extends Service implements ServiceConnection {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         // Only do this if we're not yet running.
-        if(!isRunning) {
+        if (!isRunning) {
 
             Log.d(TAG, "starting service");
 
@@ -153,7 +176,7 @@ public class ForegroundService extends Service implements ServiceConnection {
 
             try {
                 notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                Notification notification =  initNotification();
+                Notification notification = initNotification();
                 super.startForeground(SERVICE_ID, notification);
 
                 isRunning = true;
@@ -177,19 +200,18 @@ public class ForegroundService extends Service implements ServiceConnection {
         isRunning = false;
 
         // Cancel the timer holding the task that is polling Sense.
-        if(timer != null) {
+        if (timer != null) {
             timer.cancel();
         }
 
         SensePlatform platform = this.getSensePlatform();
 
         // Logout and close the Sense platform, if possible.
-        if(platform != null) {
+        if (platform != null) {
             try {
                 platform.logout();
                 platform.close();
-            }
-            catch (RemoteException e) {
+            } catch (RemoteException e) {
                 Log.e(TAG, "could not stop SensePlatform: ", e);
             }
         }
@@ -208,8 +230,8 @@ public class ForegroundService extends Service implements ServiceConnection {
         try {
 
             Dao<Setting, String> dao = this.getHelper().getSettingDao();
-            Setting userSetting =  dao.queryForId(Setting.USER_KEY);
-            Setting passwordSetting =  dao.queryForId(Setting.PASSWORD_KEY);
+            Setting userSetting = dao.queryForId(Setting.USER_KEY);
+            Setting passwordSetting = dao.queryForId(Setting.PASSWORD_KEY);
 
             getSensePlatform().login(userSetting.getValue(), passwordSetting.getValue(), callback);
 
@@ -240,7 +262,7 @@ public class ForegroundService extends Service implements ServiceConnection {
             service.setPrefString(SensePrefs.Main.SYNC_RATE, syncRateSetting.getValue());
 
             // Check if the timer is already running, if so, cancel it.
-            if(timer != null) {
+            if (timer != null) {
                 timer.cancel();
             }
 
@@ -289,7 +311,7 @@ public class ForegroundService extends Service implements ServiceConnection {
      */
     public Notification initNotification() {
 
-        if(notificationManager == null) {
+        if (notificationManager == null) {
             Log.w(TAG, "notificationManager == null");
             return null;
         }
@@ -300,8 +322,7 @@ public class ForegroundService extends Service implements ServiceConnection {
             Dao<Setting, String> dao = getHelper().getSettingDao();
             Setting userSetting = dao.queryForId(Setting.USER_KEY);
             user = userSetting.getValue();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             Log.e(TAG, "Could not retrieve USER_KEY from local DB: : ", e);
         }
 
@@ -324,7 +345,7 @@ public class ForegroundService extends Service implements ServiceConnection {
      */
     public void sendNotification(String message) {
 
-        if(notificationManager == null) {
+        if (notificationManager == null) {
             Log.w(TAG, "notificationManager == null");
         }
 
@@ -337,7 +358,7 @@ public class ForegroundService extends Service implements ServiceConnection {
         notificationManager.notify(Long.valueOf(System.currentTimeMillis()).hashCode(), notification);
 
         // Notify clients of the state change.
-        for(Messenger client : this.clients) {
+        for (Messenger client : this.clients) {
 
             try {
                 client.send(Message.obtain(null, STATE_CHANGED));
@@ -352,15 +373,15 @@ public class ForegroundService extends Service implements ServiceConnection {
     /**
      * Creates a new Notification.
      *
-     * @param icon the icon the Notification should display.
-     * @param title the title of the Notification.
-     * @param message the message of the Notification.
+     * @param icon       the icon the Notification should display.
+     * @param title      the title of the Notification.
+     * @param message    the message of the Notification.
      * @param autoCancel indicates if the Notification is to be cancelled when pressed.
      * @return a new Notification.
      */
     private Notification createNotification(int icon, String title, String message, boolean autoCancel) {
 
-        if(notificationManager == null) {
+        if (notificationManager == null) {
             Log.w(TAG, "notificationManager == null");
             return null;
         }
