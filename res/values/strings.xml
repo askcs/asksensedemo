@@ -17,22 +17,30 @@
 
     <string name="username">username</string>
     <string name="password">password</string>
-    <string name="login">Sense Login</string>
+    <string name="repeat_password">repeat password</string>
+    <string name="login_title">login @ Sense</string>
+    <string name="register_title">register @ Sense</string>
     <string name="signin">sign in</string>
+    <string name="register">register</string>
     <string name="logout">logout</string>
     <string name="cancel">cancel</string>
     <string name="yes">yes</string>
     <string name="no">no</string>
 
-    <string name="logging_in">Trying to login...</string>
+    <string name="logging_in">Trying to login…</string>
+    <string name="registering">Trying to register…</string>
     <string name="welcome_user">Hello %1$s!</string>
 
     <string name="no_login_connection">Could not login. Check your connection.</string>
     <string name="no_login_credentials">Invalid username or password.</string>
     <string name="no_login_other">Could not login. Unexpected result: %1$s</string>
 
+    <string name="no_registration_user_exists">Could not register: user already exists.</string>
+    <string name="no_registration_other">Could not register. Unexpected result: %1$s</string>
+
     <string name="enter_username">enter a valid username</string>
     <string name="enter_password">enter a valid password</string>
+    <string name="unequal_password">passwords do not match</string>
 
     <string name="logged_in_as">logged in as: %1$s</string>
     <string name="confirm_logout">Really logout?</string>

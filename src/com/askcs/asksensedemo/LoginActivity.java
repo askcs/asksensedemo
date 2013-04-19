@@ -10,11 +10,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import com.askcs.asksensedemo.database.DatabaseHelper;
 import com.askcs.asksensedemo.model.Setting;
+import com.askcs.asksensedemo.task.LoginTask;
 import com.askcs.asksensedemo.util.Utils;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
-
-import java.sql.SQLException;
 
 public class LoginActivity extends Activity {
 
@@ -31,10 +30,11 @@ public class LoginActivity extends Activity {
 
         super.setContentView(R.layout.login);
 
-        final EditText username = (EditText) super.findViewById(R.id.id_username);
-        final EditText password = (EditText) super.findViewById(R.id.id_password);
-        final Button signin = (Button) super.findViewById(R.id.id_signin);
-        final TextView error = (TextView) super.findViewById(R.id.id_error);
+        final TextView error = (TextView) super.findViewById(R.id.error);
+        final EditText username = (EditText) super.findViewById(R.id.username);
+        final EditText password = (EditText) super.findViewById(R.id.password);
+        final Button signin = (Button) super.findViewById(R.id.signin);
+        final TextView register = (TextView) super.findViewById(R.id.register);
 
         // TODO remove after testing:
         username.setText(getString(R.string.sense_username));
@@ -48,21 +48,26 @@ public class LoginActivity extends Activity {
                 String usernameValue = username.getText().toString().trim();
                 String passwordValue = password.getText().toString().trim();
 
-                if(usernameValue.isEmpty()) {
+                if (usernameValue.isEmpty()) {
                     error.setText(getString(R.string.enter_username));
                     username.requestFocus();
-                }
-                else if(passwordValue.isEmpty()) {
+                } else if (passwordValue.isEmpty()) {
                     error.setText(getString(R.string.enter_password));
                     password.requestFocus();
-                }
-                else {
+                } else {
 
                     Dao<Setting, String> dao = LoginActivity.this.getHelper().getSettingDao();
 
                     LoginTask task = new LoginTask(LoginActivity.this, usernameValue, Utils.md5(passwordValue), dao);
                     task.execute();
                 }
+            }
+        });
+
+        register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
             }
         });
     }

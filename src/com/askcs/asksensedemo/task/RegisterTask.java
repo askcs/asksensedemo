@@ -1,4 +1,4 @@
-package com.askcs.asksensedemo;
+package com.askcs.asksensedemo.task;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+import com.askcs.asksensedemo.MainActivity;
+import com.askcs.asksensedemo.R;
 import com.askcs.asksensedemo.model.Setting;
 import com.j256.ormlite.dao.Dao;
 import nl.sense_os.service.commonsense.SenseApi;
@@ -13,11 +15,11 @@ import nl.sense_os.service.commonsense.SenseApi;
 import java.sql.SQLException;
 
 /**
- * An asynchronous task performing a login to Sense.
+ * A task performing a registration of a new Sense account.
  */
-public class LoginTask extends AsyncTask<Void, Void, Boolean> {
+public class RegisterTask extends AsyncTask<Void, Void, Boolean> {
 
-    private static final String TAG = LoginTask.class.getName();
+    private static final String TAG = RegisterTask.class.getName();
 
     private final Activity activity;
     private final ProgressDialog progressDialog;
@@ -27,14 +29,14 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
     private String message = null;
 
     /**
-     * Creates a new login-task.
+     * Creates a new registration-task.
      *
-     * @param activity the Activity from which this task was started.
-     * @param username the username.
+     * @param activity     the Activity from which this task was started.
+     * @param username     the username.
      * @param passwordHash a MD5 hash of the password.
-     * @param settingDao a DAO for the local setting-table.
+     * @param settingDao   a DAO for the local setting-table.
      */
-    public LoginTask(Activity activity, String username, String passwordHash, Dao<Setting, String> settingDao) {
+    public RegisterTask(Activity activity, String username, String passwordHash, Dao<Setting, String> settingDao) {
 
         this.progressDialog = new ProgressDialog(activity);
         this.settingDao = settingDao;
@@ -44,10 +46,10 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
     }
 
     /**
-     * Makes a synchronous login call the the Sense backend.
+     * Makes a synchronous registration call the the Sense backend, (possibly) creating a new user.
      *
      * @param params nothing.
-     * @return a <code>boolean</code> value indicating whether the login was successful.
+     * @return a <code>boolean</code> value indicating whether the registration was successful.
      */
     @Override
     protected Boolean doInBackground(Void... params) {
@@ -55,24 +57,22 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
         boolean success = false;
 
         try {
-            int result = SenseApi.login(activity, username, passwordHash);
+            // Context context, String username, String password, String name, String surname, String email, String mobile
+            int result = SenseApi.registerUser(activity, username, passwordHash,
+                    "Ask", "Test", "TEST_" + System.currentTimeMillis() + "@ask-cs.com", "0612346578");
 
             switch (result) {
                 case 0:
                     success = true;
                     message = activity.getString(R.string.welcome_user, username);
                     break;
-                case -1:
-                    message = activity.getString(R.string.no_login_connection);
-                    break;
                 case -2:
-                    message = activity.getString(R.string.no_login_credentials);
+                    message = activity.getString(R.string.no_registration_user_exists);
                     break;
                 default:
-                    message = activity.getString(R.string.no_login_other, result);
+                    message = activity.getString(R.string.no_registration_other, result);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             message = e.getMessage();
         }
 
@@ -86,14 +86,14 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
     protected void onPreExecute() {
 
         // Give the dialog a message and pop it up on the screen.
-        this.progressDialog.setMessage(activity.getResources().getString(R.string.logging_in));
+        this.progressDialog.setMessage(activity.getResources().getString(R.string.registering));
         this.progressDialog.show();
     }
 
     /**
      * Executed after `doInBackground(...)` and is executed on the GUI thread.
      *
-     * @param success if the login was successful or not.
+     * @param success if the registration was successful.
      */
     @Override
     protected void onPostExecute(Boolean success) {
@@ -111,7 +111,7 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
             Setting passwordSetting = settingDao.queryForId(Setting.PASSWORD_KEY);
             Setting loggedInSetting = settingDao.queryForId(Setting.LOGGED_IN_KEY);
 
-            // Change all settings depending on successful login.
+            // Change all settings depending on successful registration.
             usernameSetting.setValue(success ? username : "");
             passwordSetting.setValue(success ? passwordHash : "");
             loggedInSetting.setValue(String.valueOf(success ? Boolean.TRUE : Boolean.FALSE));
@@ -120,13 +120,12 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
             settingDao.update(usernameSetting);
             settingDao.update(passwordSetting);
             settingDao.update(loggedInSetting);
-        }
-        catch (SQLException e) {
-            Log.e(TAG, "Something went wrong updating login credentials: ", e);
+        } catch (SQLException e) {
+            Log.e(TAG, "Something went wrong while registering: ", e);
         }
 
         if (success) {
-            // Close the LoginActivity upon successful login and start the main Activity.
+            // Close the RegisterActivity upon successful registration and start the main Activity.
             activity.startActivity(new Intent(activity, MainActivity.class));
             activity.finish();
         }

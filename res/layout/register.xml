@@ -11,7 +11,7 @@
         android:layout_gravity="center_horizontal|center_vertical">
 
         <TextView
-            android:id="@+id/error"
+            android:id="@+id/reg_error"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="5dp"
@@ -22,39 +22,37 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/login_title"
+            android:text="@string/register_title"
             android:paddingBottom="12dp"
             android:paddingLeft="5dp"
-            android:textSize="25dp"/>
+            android:textSize="22dp"/>
 
         <EditText
-            android:id="@+id/username"
+            android:id="@+id/reg_username"
             android:inputType="textEmailAddress"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:hint="@string/username"/>
 
         <EditText
-            android:id="@+id/password"
+            android:id="@+id/reg_password1"
             android:inputType="textPassword"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"/>
 
-        <Button
-            android:id="@+id/signin"
+        <EditText
+            android:id="@+id/reg_password2"
+            android:inputType="textPassword"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/signin"/>
+            android:hint="@string/repeat_password"/>
 
-        <TextView
-            android:id="@+id/register"
+        <Button
+            android:id="@+id/reg_register"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/register"
-            android:paddingTop="10dp"
-            android:paddingLeft="130dp"
-            android:textSize="18dp"/>
+            android:text="@string/register"/>
 
     </LinearLayout>
 
