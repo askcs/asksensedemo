@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.LoginFilter;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
@@ -117,7 +116,7 @@ public class MainActivity extends Activity {
 
             State activityState = stateDao.queryForId(State.ACTIVITY_KEY);
             State locationState = stateDao.queryForId(State.LOCATION_KEY);
-            State presenceState = stateDao.queryForId(State.PRESENCE_KEY);
+            State presenceState = stateDao.queryForId(State.REACHABILITY_KEY);
 
             TextView txtActivity = (TextView) super.findViewById(R.id.id_txt_status_activity);
             txtActivity.setText(activityState.toString());

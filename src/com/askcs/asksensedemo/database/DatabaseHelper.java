@@ -52,7 +52,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
             this.getStateDao().create(new State(State.ACTIVITY_KEY, "unknown", new Date().getTime()));
             this.getStateDao().create(new State(State.LOCATION_KEY, "unknown", new Date().getTime()));
-            this.getStateDao().create(new State(State.PRESENCE_KEY, "unknown", new Date().getTime()));
+            this.getStateDao().create(new State(State.REACHABILITY_KEY, "unknown", new Date().getTime()));
 
 		} catch (SQLException e) {
 			Log.e(TAG, "Can't create database", e);

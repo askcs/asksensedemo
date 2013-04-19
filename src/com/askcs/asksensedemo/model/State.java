@@ -12,7 +12,7 @@ public class State {
 
     public static final String ACTIVITY_KEY = "Activity";
     public static final String LOCATION_KEY = "Location";
-    public static final String PRESENCE_KEY = "Reachability";
+    public static final String REACHABILITY_KEY = "Reachability";
 
     @DatabaseField(id=true)
     private String state;

@@ -46,6 +46,8 @@
     <string name="confirm_logout">Really logout?</string>
     <string name="app_started">Ask Sense Demo started</string>
 
+    <string name="state_change">state change</string>
+
     <!-- <SENSE> -->
     <!-- OVERRIDE INTENT ACTIONS FOR BUNDLED SENSE PLATFORM (ALSO CHANGE IN MANIFEST!!) -->
     <string name="action_sense_service">nl.sense_os.demo.SENSE_SERVICE</string>

@@ -4,10 +4,9 @@ import android.app.*;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.askcs.asksensedemo.database.DatabaseHelper;
@@ -43,52 +42,9 @@ public class ForegroundService extends Service implements ServiceConnection {
         @Override
         public void onChangeLoginResult(int result) throws RemoteException {
 
-            Log.d(TAG, "result=" + result);
-
+            // The LoginActivity assured that username and password are
+            // correct, no need to inspect `result`.
             onLoggedIn();
-            /*
-            boolean loginOK = false;
-            String message = null;
-
-            switch (result) {
-                case 0:
-                    Log.v(TAG, "Change login OK");
-                    loginOK = true;
-                    onLoggedIn();
-                    break;
-                case -1:
-                    message = getString(R.string.no_login_connection);
-                    break;
-                case -2:
-                    message = getString(R.string.no_login_credentials);
-                    break;
-                default:
-                    message = getString(R.string.no_login_other, result);
-            }
-
-            if(!loginOK) {
-
-                Log.w(TAG, "could not login: " + message);
-
-                final Dao<Setting, String> settingDao = ForegroundService.this.getHelper().getSettingDao();
-
-                try {
-                    Setting loggedInSetting = settingDao.queryForId(Setting.LOGGED_IN_KEY);
-                    loggedInSetting.setValue(String.valueOf(Boolean.FALSE));
-                    settingDao.update(loggedInSetting);
-                }
-                catch (Exception e) {
-                    Log.e(TAG, "Oops: ", e);
-                }
-
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("message", message);
-                getApplication().startActivity(intent);
-
-                stopService(new Intent(ForegroundService.this, ForegroundService.class));
-            }
-            */
         }
 
         @Override
@@ -116,20 +72,12 @@ public class ForegroundService extends Service implements ServiceConnection {
             Log.d(TAG, "starting service");
 
             timer = new Timer();
-
             sensePlatform = new SensePlatform(this, this);
 
             try {
                 notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            } catch (Exception e) {
-                Log.w(TAG, "something went wrong during initialization of member vars: ", e);
-            }
-
-            try {
-                Notification notification =  updateNotification();
-
+                Notification notification =  initNotification();
                 super.startForeground(SERVICE_ID, notification);
-
                 isRunning = true;
 
             } catch (Exception e) {
@@ -139,8 +87,6 @@ public class ForegroundService extends Service implements ServiceConnection {
 
         return START_NOT_STICKY;
     }
-
-
 
     @Override
     public void onDestroy() {
@@ -153,18 +99,15 @@ public class ForegroundService extends Service implements ServiceConnection {
             timer.cancel();
         }
 
-        synchronized (this.sensePlatform) {
+        SensePlatform platform = this.getSensePlatform();
 
-            if(sensePlatform != null) {
-
-                try {
-                    sensePlatform.logout();
-                }
-                catch (RemoteException e) {
-                    Log.e(TAG, "could not logout of Sense: ", e);
-                }
-
-                sensePlatform.close();
+        if(platform != null) {
+            try {
+                platform.logout();
+                platform.close();
+            }
+            catch (RemoteException e) {
+                Log.e(TAG, "could not logout of Sense: ", e);
             }
         }
 
@@ -179,9 +122,6 @@ public class ForegroundService extends Service implements ServiceConnection {
             Setting userSetting =  dao.queryForId(Setting.USER_KEY);
             Setting passwordSetting =  dao.queryForId(Setting.PASSWORD_KEY);
 
-            // Log in (you only need to do this once, Sense will remember the login).
-            // This is an asynchronous call, we get a call to the callback object when the login is
-            // complete.
             getSensePlatform().login(userSetting.getValue(), passwordSetting.getValue(), callback);
 
         } catch (Exception e) {
@@ -306,7 +246,7 @@ public class ForegroundService extends Service implements ServiceConnection {
 
                             check(checkActivity, State.ACTIVITY_KEY);
                             check(checkLocation, State.LOCATION_KEY);
-                            check(checkPresence, State.PRESENCE_KEY);
+                            check(checkPresence, State.REACHABILITY_KEY);
                         }
                         catch (Exception e) {
                             Log.e(TAG, "Oops: ", e);
@@ -322,30 +262,42 @@ public class ForegroundService extends Service implements ServiceConnection {
         }
     }
 
+    /**
+     * Lazily get a ORM-lite flavoured <code>DatabaseHelper</code>. This can
+     * be called from the GUI thread, and from the Timer-thread.
+     *
+     * @return a ORM-lite flavoured <code>DatabaseHelper</code>.
+     */
+    public synchronized DatabaseHelper getHelper() {
+
+        if (databaseHelper == null) {
+            databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+        }
+
+        return databaseHelper;
+    }
+
+    /**
+     * Returns a reference to the <code>SensePlatform</code>. This can
+     * be called from the GUI thread, and from the Timer-thread.
+     *
+     * @return a reference to the <code>SensePlatform</code>.
+     */
     protected synchronized SensePlatform getSensePlatform() {
         return this.sensePlatform;
     }
 
-    @SuppressWarnings("deprecation")
-    protected Notification updateNotification() {
+    /**
+     * Initializes the
+     *
+     * @return
+     */
+    protected Notification initNotification() {
 
         if(notificationManager == null) {
             Log.w(TAG, "notificationManager == null");
             return null;
         }
-
-        Resources res = getResources();
-
-        Notification notification = new Notification(
-                R.drawable.ask_icon_gray, getString(R.string.app_started),
-                System.currentTimeMillis());
-
-        Intent gotoIntent = new Intent(this , MainActivity.class);
-
-        gotoIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, gotoIntent, 0);
 
         String user = "unknown";
 
@@ -355,54 +307,51 @@ public class ForegroundService extends Service implements ServiceConnection {
             user = userSetting.getValue();
         }
         catch (SQLException e) {
-            Log.e(TAG, "Oops: ", e);
+            Log.e(TAG, "Could not retrieve USER_KEY from local DB: : ", e);
         }
 
-        notification.setLatestEventInfo(this, res.getString(R.string.app_name),
-                res.getString(R.string.logged_in_as, user), pendingIntent);
+        Intent intent = new Intent(this, MainActivity.class);
 
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-        notification.flags |= Notification.FLAG_NO_CLEAR;
+        Notification notification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ask_icon_gray)
+                .setContentTitle(getString(R.string.app_started))
+                .setContentText(getString(R.string.logged_in_as, user))
+                .setWhen(System.currentTimeMillis())
+                .setAutoCancel(false)
+                .setContentIntent(pendingIntent)
+                .build();
 
         notificationManager.notify(SERVICE_ID, notification);
 
         return notification;
     }
 
-    @SuppressWarnings("deprecation")
+    /**
+     *
+     *
+     * @param message
+     */
     public void sendNotification(String message) {
 
         if(notificationManager == null) {
             Log.w(TAG, "notificationManager == null");
         }
 
-        Resources res = getResources();
+        Intent intent = new Intent(this, MainActivity.class);
 
-        Notification notification = new Notification(
-                R.drawable.ask_icon_red, "state change",
-                System.currentTimeMillis());
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-        Intent gotoIntent = new Intent(this , MainActivity.class);
-
-        gotoIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, gotoIntent, 0);
-
-        notification.setLatestEventInfo(this, res.getString(R.string.app_name),
-                message, pendingIntent);
-
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        Notification notification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ask_icon_red)
+                .setContentTitle(getString(R.string.state_change))
+                .setContentText(message)
+                .setWhen(System.currentTimeMillis())
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .build();
 
         notificationManager.notify(Long.valueOf(System.currentTimeMillis()).hashCode(), notification);
-    }
-
-    public DatabaseHelper getHelper() {
-
-        if (databaseHelper == null) {
-            databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-        }
-
-        return databaseHelper;
     }
 }
