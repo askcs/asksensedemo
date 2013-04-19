@@ -34,7 +34,6 @@ public class State {
      * Creates a new instance of a State: needed by ORMLite.
      */
     public State() {
-        // No-args constructor needed by ORMLite.
     }
 
     /**

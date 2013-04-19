@@ -258,6 +258,10 @@ public class ForegroundService extends Service implements ServiceConnection {
             Setting syncRateSetting = dao.queryForId(Setting.SYNC_RATE_KEY);
             Setting pollSecondsSetting = dao.queryForId(Setting.POLL_SENSE_SECONDS_KEY);
 
+            Log.d(TAG, "set SAMPLE_RATE            = " + sampleRateSetting.getValue());
+            Log.d(TAG, "set SYNC_RATE_KEY          = " + syncRateSetting.getValue());
+            Log.d(TAG, "set POLL_SENSE_SECONDS_KEY = " + pollSecondsSetting.getValue());
+
             service.setPrefString(SensePrefs.Main.SAMPLE_RATE, sampleRateSetting.getValue());
             service.setPrefString(SensePrefs.Main.SYNC_RATE, syncRateSetting.getValue());
 

@@ -53,7 +53,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         Log.d(TAG, "onCreate");
 
         try {
-            for (Class<?> tableClass : DatabaseConfigUtil.classes) {
+            for (Class<?> tableClass : DatabaseConfigUtil.CLASSES) {
                 Log.d(TAG, "creating a table for class: " + tableClass.getName());
                 TableUtils.createTable(connectionSource, tableClass);
             }
