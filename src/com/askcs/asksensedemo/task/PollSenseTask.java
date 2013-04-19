@@ -11,93 +11,113 @@ import org.json.JSONObject;
 import java.sql.SQLException;
 import java.util.TimerTask;
 
-public class PollSenseTask extends TimerTask {
+/**
+ * A timer-task responsible for fetching state-sensor data from Sense.
+ */
+public final class PollSenseTask extends TimerTask {
 
+    // The log-tag.
     private static final String TAG = PollSenseTask.class.getName();
 
+    // The foreground service this timer task is executed from.
     private final ForegroundService service;
+
+    // The next waiting time of this task: only used for debugging purposes.
     private final long pause;
 
+    /**
+     * Creates a new timer task that fetched state-sensor data from Sense.
+     *
+     * @param service the foreground service this timer task is executed from.
+     * @param pause   the next waiting time of this task: only used for debugging purposes.
+     */
     public PollSenseTask(ForegroundService service, long pause) {
 
         this.service = service;
         this.pause = pause;
     }
 
+    /**
+     * Fetches all state-sensor settings and delegates the work to the `check()` method.
+     *
+     * @see this#check(boolean, String)
+     */
     @Override
     public void run() {
+
+        Log.d(TAG, "ticking every " + (pause / 1000) + " seconds");
+
+        Dao<Setting, String> settingDao = service.getHelper().getSettingDao();
+
+        // Let's assume none of the state sensors need to be polled.
+        boolean checkActivity = false;
+        boolean checkLocation = false;
+        boolean checkReachability = false;
+
         try {
+            // Get all sensor enabled-settings from the local DB.
+            Setting activitySetting = settingDao.queryForId(Setting.ACTIVITY_ENABLED_KEY);
+            Setting locationSetting = settingDao.queryForId(Setting.LOCATION_ENABLED_KEY);
+            Setting presenceSetting = settingDao.queryForId(Setting.REACHABILITY_ENABLED_KEY);
 
-            Log.d(TAG, "ticking every " + (pause / 1000)+ " seconds");
-
-            Dao<Setting, String> settingDao = service.getHelper().getSettingDao();
-
-            boolean checkActivity = false;
-            boolean checkLocation = false;
-            boolean checkPresence = false;
-
-            try {
-                Setting activitySetting = settingDao.queryForId(Setting.ACTIVITY_ENABLED_KEY);
-                Setting locationSetting = settingDao.queryForId(Setting.LOCATION_ENABLED_KEY);
-                Setting presenceSetting = settingDao.queryForId(Setting.REACHABILITY_ENABLED_KEY);
-
-                checkActivity = activitySetting.getValue().equals(String.valueOf(Boolean.TRUE));
-                checkLocation = locationSetting.getValue().equals(String.valueOf(Boolean.TRUE));
-                checkPresence = presenceSetting.getValue().equals(String.valueOf(Boolean.TRUE));
-            }
-            catch (SQLException e) {
-                Log.e(TAG, "Oops: ", e);
-            }
-
-            check(checkActivity, State.ACTIVITY_KEY);
-            check(checkLocation, State.LOCATION_KEY);
-            check(checkPresence, State.REACHABILITY_KEY);
+            // Parse their string values into boolean values.
+            checkActivity = activitySetting.getValue().equals(String.valueOf(Boolean.TRUE));
+            checkLocation = locationSetting.getValue().equals(String.valueOf(Boolean.TRUE));
+            checkReachability = presenceSetting.getValue().equals(String.valueOf(Boolean.TRUE));
         }
-        catch (Exception e) {
-            Log.e(TAG, "Oops: ", e);
+        catch (SQLException e) {
+            Log.e(TAG, "Could not get settings from local DB: ", e);
         }
+
+        // Delegate the actual work.
+        check(checkActivity, State.ACTIVITY_KEY);
+        check(checkLocation, State.LOCATION_KEY);
+        check(checkReachability, State.REACHABILITY_KEY);
     }
 
+    // Does the actual work: if `doCheck` is `true`, the most recent entry
+    // for `stateKey` from Sense is retrieved and compared to the most recent
+    // entry from the local DB.
     private void check(boolean doCheck, String stateKey) {
 
-        if(doCheck) {
+        if (!doCheck) {
+            return;
+        }
 
-            Dao<State, String> stateDao = service.getHelper().getStateDao();
+        try {
+            // Get the most recent (single!) entry from Sense.
+            JSONArray data = service.getSensePlatform().getData(stateKey, false, 1);
 
-            try {
-                int limit = 1;
-                JSONArray data = service.getSensePlatform().getData(stateKey, false, limit);
+            // Check if Sense returned at least 1 value.
+            if (data.length() > 0) {
 
-                Log.d(TAG, "--> limit=" + limit + ", data.length=" + data.length());
+                Dao<State, String> stateDao = service.getHelper().getStateDao();
 
-                State last = stateDao.queryForId(stateKey);
+                // Get the most recent entry from the local DB.
+                State mostRecentLocal = stateDao.queryForId(stateKey);
 
-                if(data.length() > 0) {
+                // Get the most recent entry from Sense.
+                JSONObject obj = (JSONObject) data.get(0);
+                State mostRecentSense = new State(stateKey, obj.getString("value"), obj.getLong("timestamp"));
 
-                    JSONObject obj = (JSONObject)data.get(0);
-                    State state = new State(stateKey, obj.getString("value"), obj.getLong("timestamp"));
+                // Check if there are any changes.
+                if (!mostRecentSense.equals(mostRecentLocal)) {
 
-                    Log.d(TAG, stateKey + " :: last state -> " + state);
+                    String message = String.format("%s -> %s", mostRecentLocal.getValue(), mostRecentSense.getValue());
+                    Log.d(TAG, message);
 
-                    if(!state.equals(last)) {
+                    // Update the old entry and update the local DB.
+                    mostRecentLocal.setValue(mostRecentSense.getValue());
+                    mostRecentLocal.setTimestamp(mostRecentSense.getTimestamp());
+                    stateDao.update(mostRecentLocal);
 
-                        String message = String.format("%s -> %s", last.getValue(), state.getValue());
-
-                        Log.i(TAG, message);
-
-                        last.setValue(state.getValue());
-                        last.setTimestamp(state.getTimestamp());
-                        stateDao.update(last);
-
-                        service.sendNotification(message);
-                    }
+                    // Send a notification to the user via the OS status-bar.
+                    service.sendNotification(message);
                 }
-            } catch(Exception e) {
-                Log.e(TAG, "Oops: ", e);
             }
         }
-        else {
-            Log.d(TAG, "skipping " + stateKey);
+        catch (Exception e) {
+            Log.e(TAG, "something went wrong while fetching data from Sense: ", e);
         }
     }
 }
