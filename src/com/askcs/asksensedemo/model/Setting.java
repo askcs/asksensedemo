@@ -12,7 +12,20 @@ public class Setting {
 	public static final String ACTIVITY_ENABLED_KEY = "activity_enabled";
 	public static final String LOCATION_ENABLED_KEY = "location_enabled";
 	public static final String REACHABILITY_ENABLED_KEY = "reachability_enabled";
-	
+    public static final String POLL_SENSE_SECONDS_KEY = "poll_sense_seconds";
+
+    // 1 := rarely (~every 15 min)
+    // 0 := normal (~every 5 min)
+    // -1 := often (~every 10 sec)
+    // -2 := real time (this setting affects power consumption considerably!)
+    public static final String SAMPLE_RATE_KEY = "sample_rate";
+
+    // 1 := eco mode (buffer data for 30 minutes before bulk uploading)
+    // 0 := normal (buffer 5 min)
+    // -1 := often (buffer 1 min)
+    // -2 := real time (every new data point is uploaded immediately)
+    public static final String SYNC_RATE_KEY = "sync_rate";
+
 	@DatabaseField(id=true)
 	private String key;
 	

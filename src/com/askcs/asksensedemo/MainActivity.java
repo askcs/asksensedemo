@@ -2,9 +2,8 @@ package com.askcs.asksensedemo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
+import android.content.*;
+import android.os.*;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
@@ -14,13 +13,54 @@ import com.askcs.asksensedemo.model.State;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
+import java.lang.ref.WeakReference;
 import java.sql.SQLException;
+
+import static com.askcs.asksensedemo.MessageType.*;
 
 public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getName();
 
+    // TODO
+    private Messenger serviceMessenger = null;
+
+    // The Messenger of this Activity that handles incoming messages.
+    private Messenger activityMessenger = null;
+
+    // TODO
     private DatabaseHelper databaseHelper = null;
+
+    // A handler receiving Messages from the fore ground service it is bound to.
+    private static final class ActivityHandler extends Handler {
+
+        private final WeakReference<MainActivity> reference;
+
+        ActivityHandler(MainActivity activity) {
+            reference = new WeakReference<MainActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message message) {
+
+            MainActivity activity = reference.get();
+
+            if(activity == null) {
+                Log.w(TAG, "activity was already destroyed, ignoring message: " + message);
+                return;
+            }
+
+            switch (message.what) {
+
+                case STATE_CHANGED:
+                    Log.d(TAG, "handling STATE_CHANGED");
+                    activity.readStates();
+                    break;
+                default:
+                    Log.w(TAG, "unknown message type: " + message);
+            }
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,6 +118,40 @@ public class MainActivity extends Activity {
                         .show();
             }
         });
+
+        this.activityMessenger = new Messenger(new ActivityHandler(this));
+
+        bindToService();
+
+        readStates();
+    }
+
+    private void bindToService() {
+
+        final ServiceConnection connection = new ServiceConnection() {
+
+            @Override
+            public void onServiceConnected(ComponentName className, IBinder service) {
+
+                serviceMessenger = new Messenger(service);
+
+                try {
+                    Message message = Message.obtain(null, REGISTER);
+                    message.replyTo = MainActivity.this.activityMessenger;
+                    serviceMessenger.send(message);
+
+                } catch (RemoteException e) {
+                    Log.e(TAG, "crashed service: ", e);
+                }
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName className) {
+                serviceMessenger = null;
+            }
+        };
+
+        bindService(new Intent(this, ForegroundService.class), connection, Context.BIND_AUTO_CREATE);
     }
 
     private void checkLoggedIn() {
@@ -102,12 +176,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    @Override
-    protected void onResume() {
-
-        super.onResume();
-
-        checkLoggedIn();
+    private void readStates() {
 
         try {
             // Get the most recent states and update the GUI text views.
@@ -126,6 +195,7 @@ public class MainActivity extends Activity {
 
             TextView txtPresence = (TextView) super.findViewById(R.id.id_txt_status_presence);
             txtPresence.setText(presenceState.toString());
+
         }
         catch (SQLException e) {
             Log.e(TAG, "Oops: ", e);
@@ -142,6 +212,18 @@ public class MainActivity extends Activity {
         if (databaseHelper != null) {
             OpenHelperManager.releaseHelper();
             databaseHelper = null;
+        }
+
+        if(this.serviceMessenger != null) {
+
+            Message unregisterMessage = Message.obtain(null, UNREGISTER);
+            unregisterMessage.replyTo = this.activityMessenger;
+
+            try {
+                this.serviceMessenger.send(unregisterMessage);
+            } catch (RemoteException e) {
+                Log.w(TAG, "could not unregister from service");
+            }
         }
     }
 
