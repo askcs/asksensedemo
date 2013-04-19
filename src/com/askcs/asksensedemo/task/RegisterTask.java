@@ -19,13 +19,25 @@ import java.sql.SQLException;
  */
 public class RegisterTask extends AsyncTask<Void, Void, Boolean> {
 
+    // The log tag.
     private static final String TAG = RegisterTask.class.getName();
 
+    // The Activity this task was executed from.
     private final Activity activity;
+
+    // A progress dialog that is shown while doing work.
     private final ProgressDialog progressDialog;
+
+    // The setting DAO.
     private final Dao<Setting, String> settingDao;
+
+    // The new username.
     private final String username;
+
+    // The MD5 hash of the user's password.
     private final String passwordHash;
+
+    // The message after login (after `doInBackground()`).
     private String message = null;
 
     /**
@@ -46,18 +58,21 @@ public class RegisterTask extends AsyncTask<Void, Void, Boolean> {
     }
 
     /**
-     * Makes a synchronous registration call the the Sense backend, (possibly) creating a new user.
+     * Makes a synchronous registration call the the Sense backend, (possibly)
+     * creating a new user.
      *
      * @param params nothing.
-     * @return a <code>boolean</code> value indicating whether the registration was successful.
+     *
+     * @return a <code>boolean</code> value indicating whether the registration
+     *         was successful.
      */
     @Override
     protected Boolean doInBackground(Void... params) {
 
+        // Assume the registration went wrong.
         boolean success = false;
 
         try {
-            // Context context, String username, String password, String name, String surname, String email, String mobile
             int result = SenseApi.registerUser(activity, username, passwordHash,
                     "Ask", "Test", "TEST_" + System.currentTimeMillis() + "@ask-cs.com", "0612346578");
 
@@ -72,7 +87,8 @@ public class RegisterTask extends AsyncTask<Void, Void, Boolean> {
                 default:
                     message = activity.getString(R.string.no_registration_other, result);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             message = e.getMessage();
         }
 
@@ -120,7 +136,8 @@ public class RegisterTask extends AsyncTask<Void, Void, Boolean> {
             settingDao.update(usernameSetting);
             settingDao.update(passwordSetting);
             settingDao.update(loggedInSetting);
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             Log.e(TAG, "Something went wrong while registering: ", e);
         }
 
