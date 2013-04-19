@@ -4,6 +4,7 @@ import android.app.*;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -42,6 +43,10 @@ public class ForegroundService extends Service implements ServiceConnection {
         @Override
         public void onChangeLoginResult(int result) throws RemoteException {
 
+            Log.d(TAG, "result=" + result);
+
+            onLoggedIn();
+            /*
             boolean loginOK = false;
             String message = null;
 
@@ -83,6 +88,7 @@ public class ForegroundService extends Service implements ServiceConnection {
 
                 stopService(new Intent(ForegroundService.this, ForegroundService.class));
             }
+            */
         }
 
         @Override

@@ -24,6 +24,9 @@
     <string name="yes">yes</string>
     <string name="no">no</string>
 
+    <string name="logging_in">Trying to login...</string>
+    <string name="welcome_user">Hello %1$s!</string>
+
     <string name="no_login_connection">Could not login. Check your connection.</string>
     <string name="no_login_credentials">Invalid username or password.</string>
     <string name="no_login_other">Could not login. Unexpected result: %1$s</string>

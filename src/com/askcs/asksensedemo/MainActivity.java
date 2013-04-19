@@ -39,9 +39,7 @@ public class MainActivity extends Activity {
         super.setContentView(R.layout.main);
 
         init(R.id.id_checkbox_activity, Setting.ACTIVITY_ENABLED_KEY);
-
         init(R.id.id_checkbox_location, Setting.LOCATION_ENABLED_KEY);
-
         init(R.id.id_checkbox_presence, Setting.PRESENCE_ENABLED_KEY);
 
         findViewById(R.id.id_logout).setOnClickListener(new View.OnClickListener() {
@@ -54,12 +52,15 @@ public class MainActivity extends Activity {
                                 try {
                                     Setting userSetting = settingDao.queryForId(Setting.USER_KEY);
                                     Setting passwordSetting = settingDao.queryForId(Setting.PASSWORD_KEY);
+                                    Setting loggedInSetting = settingDao.queryForId(Setting.LOGGED_IN_KEY);
 
                                     userSetting.setValue("");
                                     passwordSetting.setValue("");
+                                    loggedInSetting.setValue(String.valueOf(Boolean.FALSE));
 
                                     settingDao.update(userSetting);
                                     settingDao.update(passwordSetting);
+                                    settingDao.update(loggedInSetting);
 
                                     MainActivity.this.stopService(serviceIntent);
                                     MainActivity.this.finish();
@@ -81,9 +82,8 @@ public class MainActivity extends Activity {
     }
 
     private void checkLoggedIn() {
-        final Dao<Setting, String> settingDao = this.getHelper().getSettingDao();
 
-        final Intent serviceIntent = new Intent(this, ForegroundService.class);
+        final Dao<Setting, String> settingDao = this.getHelper().getSettingDao();
 
         try {
             final Setting loggedInSetting = settingDao.queryForId(Setting.LOGGED_IN_KEY);
@@ -95,7 +95,7 @@ public class MainActivity extends Activity {
                 finish();
             }
             else {
-                startService(serviceIntent);
+                startService(new Intent(this, ForegroundService.class));
             }
         }
         catch (SQLException e) {

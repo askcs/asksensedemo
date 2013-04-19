@@ -36,17 +36,12 @@ public class LoginActivity extends Activity {
         final Button signin = (Button) super.findViewById(R.id.id_signin);
         final TextView error = (TextView) super.findViewById(R.id.id_error);
 
-        Bundle bundle = getIntent().getExtras();
-
-        if(bundle != null && bundle.containsKey("message")) {
-            error.setText((String)bundle.get("message"));
-        }
-
         // TODO remove after testing:
-        //username.setText(getString(R.string.sense_username));
-        //password.setText(getString(R.string.sense_password));
+        username.setText(getString(R.string.sense_username));
+        password.setText(getString(R.string.sense_password));
 
         signin.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
 
@@ -65,27 +60,8 @@ public class LoginActivity extends Activity {
 
                     Dao<Setting, String> dao = LoginActivity.this.getHelper().getSettingDao();
 
-                    try {
-                        Setting usernameSetting = dao.queryForId(Setting.USER_KEY);
-                        Setting passwordSetting = dao.queryForId(Setting.PASSWORD_KEY);
-                        Setting loggedInSetting = dao.queryForId(Setting.LOGGED_IN_KEY);
-
-                        usernameSetting.setValue(usernameValue);
-                        passwordSetting.setValue(Utils.md5(passwordValue));
-                        loggedInSetting.setValue(String.valueOf(Boolean.TRUE));
-
-                        dao.update(usernameSetting);
-                        dao.update(passwordSetting);
-                        dao.update(loggedInSetting);
-
-                        Log.d(TAG, "usernameSetting=" + usernameSetting + ", passwordSetting=" + passwordSetting);
-
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        finish();
-
-                    } catch (SQLException e) {
-                        Log.e(TAG, "Oops: ", e);
-                    }
+                    LoginTask task = new LoginTask(LoginActivity.this, usernameValue, Utils.md5(passwordValue), dao);
+                    task.execute();
                 }
             }
         });
