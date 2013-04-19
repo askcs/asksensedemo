@@ -37,8 +37,8 @@ public class LoginActivity extends Activity {
         final TextView register = (TextView) super.findViewById(R.id.register);
 
         // TODO remove after testing:
-        username.setText(getString(R.string.sense_username));
-        password.setText(getString(R.string.sense_password));
+        //username.setText(getString(R.string.sense_username));
+        //password.setText(getString(R.string.sense_password));
 
         signin.setOnClickListener(new View.OnClickListener() {
 
