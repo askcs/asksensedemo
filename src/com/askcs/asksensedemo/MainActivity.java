@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
     private DatabaseHelper databaseHelper = null;
 
     // A handler receiving Messages from the fore ground service it is bound to.
-    private static final class ActivityHandler extends Handler {
+    static final class ActivityHandler extends Handler {
 
         private final WeakReference<MainActivity> reference;
 

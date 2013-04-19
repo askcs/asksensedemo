@@ -65,7 +65,7 @@ public class ForegroundService extends Service implements ServiceConnection {
     private Set<Messenger> clients = null;
 
     // A handler receiving Messages from Activities that are bound to this service.
-    private static class ServiceHandler extends Handler {
+    static class ServiceHandler extends Handler {
 
         private WeakReference<ForegroundService> reference;
 
