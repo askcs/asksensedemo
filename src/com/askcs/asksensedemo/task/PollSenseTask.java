@@ -1,7 +1,7 @@
 package com.askcs.asksensedemo.task;
 
 import android.util.Log;
-import com.askcs.asksensedemo.ForegroundService;
+import com.askcs.asksensedemo.service.ForegroundService;
 import com.askcs.asksensedemo.model.Setting;
 import com.askcs.asksensedemo.model.State;
 import com.j256.ormlite.dao.Dao;

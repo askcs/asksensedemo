@@ -1,10 +1,10 @@
-package com.askcs.asksensedemo;
+package com.askcs.asksensedemo.service;
 
 /**
  * A final class to hold Message types.
  *
  * @see ForegroundService.ServiceHandler
- * @see MainActivity.ActivityHandler
+ * @see com.askcs.asksensedemo.MainActivity.ActivityHandler
  */
 public final class MessageType {
 

@@ -99,7 +99,7 @@
             android:name=".RegisterActivity"
             android:label="@string/app_name" />
 
-        <service android:name=".ForegroundService"/>
+        <service android:name=".service.ForegroundService"/>
 
         <!-- <SENSE> -->
         <!-- MAIN SERVICE THAT MANAGES SENSING -->

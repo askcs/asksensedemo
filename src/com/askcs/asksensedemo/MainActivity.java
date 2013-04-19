@@ -10,6 +10,7 @@ import android.widget.*;
 import com.askcs.asksensedemo.database.DatabaseHelper;
 import com.askcs.asksensedemo.model.Setting;
 import com.askcs.asksensedemo.model.State;
+import com.askcs.asksensedemo.service.ForegroundService;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
@@ -18,7 +19,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.askcs.asksensedemo.MessageType.*;
+import static com.askcs.asksensedemo.service.MessageType.*;
 
 public class MainActivity extends Activity {
 

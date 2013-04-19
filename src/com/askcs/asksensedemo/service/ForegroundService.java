@@ -1,4 +1,4 @@
-package com.askcs.asksensedemo;
+package com.askcs.asksensedemo.service;
 
 import android.app.*;
 import android.content.ComponentName;
@@ -8,6 +8,8 @@ import android.os.*;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.askcs.asksensedemo.MainActivity;
+import com.askcs.asksensedemo.R;
 import com.askcs.asksensedemo.database.DatabaseHelper;
 import com.askcs.asksensedemo.model.Setting;
 import com.askcs.asksensedemo.task.PollSenseTask;
@@ -26,7 +28,7 @@ import nl.sense_os.service.ISenseService;
 import nl.sense_os.service.ISenseServiceCallback;
 import nl.sense_os.service.constants.SensePrefs;
 
-import static com.askcs.asksensedemo.MessageType.*;
+import static com.askcs.asksensedemo.service.MessageType.*;
 
 /**
  * A service running in the foreground responsible for handling tasks that
