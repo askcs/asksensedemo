@@ -39,7 +39,7 @@ public class MainActivity extends Activity {
 
         init(R.id.id_checkbox_activity, Setting.ACTIVITY_ENABLED_KEY);
         init(R.id.id_checkbox_location, Setting.LOCATION_ENABLED_KEY);
-        init(R.id.id_checkbox_presence, Setting.PRESENCE_ENABLED_KEY);
+        init(R.id.id_checkbox_presence, Setting.REACHABILITY_ENABLED_KEY);
 
         findViewById(R.id.id_logout).setOnClickListener(new View.OnClickListener() {
             @Override

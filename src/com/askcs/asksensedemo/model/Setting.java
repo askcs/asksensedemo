@@ -11,7 +11,7 @@ public class Setting {
     public static final String LOGGED_IN_KEY = "logged_in";
 	public static final String ACTIVITY_ENABLED_KEY = "activity_enabled";
 	public static final String LOCATION_ENABLED_KEY = "location_enabled";
-	public static final String PRESENCE_ENABLED_KEY = "presence_enabled";
+	public static final String REACHABILITY_ENABLED_KEY = "reachability_enabled";
 	
 	@DatabaseField(id=true)
 	private String key;
@@ -39,11 +39,7 @@ public class Setting {
 		
 		return this.key.equals(that.key);
 	}
-	
-	public String getKey() {
-		return key;
-	}
-	
+
 	public String getValue() {
 		return value;
 	}
@@ -51,10 +47,6 @@ public class Setting {
 	@Override
 	public int hashCode() {
 		return key.hashCode();
-	}
-	
-	public void setKey(String key) {
-		this.key = key;
 	}
 	
 	public void setValue(String value) {

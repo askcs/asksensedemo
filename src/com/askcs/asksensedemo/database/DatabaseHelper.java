@@ -45,7 +45,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
             this.getSettingDao().create(new Setting(Setting.ACTIVITY_ENABLED_KEY, String.valueOf(Boolean.FALSE)));
             this.getSettingDao().create(new Setting(Setting.LOCATION_ENABLED_KEY, String.valueOf(Boolean.FALSE)));
-            this.getSettingDao().create(new Setting(Setting.PRESENCE_ENABLED_KEY, String.valueOf(Boolean.FALSE)));
+            this.getSettingDao().create(new Setting(Setting.REACHABILITY_ENABLED_KEY, String.valueOf(Boolean.FALSE)));
             this.getSettingDao().create(new Setting(Setting.USER_KEY, ""));
             this.getSettingDao().create(new Setting(Setting.PASSWORD_KEY, ""));
             this.getSettingDao().create(new Setting(Setting.LOGGED_IN_KEY, String.valueOf(Boolean.FALSE)));

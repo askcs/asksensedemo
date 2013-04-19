@@ -234,7 +234,7 @@ public class ForegroundService extends Service implements ServiceConnection {
                             try {
                                 Setting activitySetting = settingDao.queryForId(Setting.ACTIVITY_ENABLED_KEY);
                                 Setting locationSetting = settingDao.queryForId(Setting.LOCATION_ENABLED_KEY);
-                                Setting presenceSetting = settingDao.queryForId(Setting.PRESENCE_ENABLED_KEY);
+                                Setting presenceSetting = settingDao.queryForId(Setting.REACHABILITY_ENABLED_KEY);
 
                                 checkActivity = activitySetting.getValue().equals(String.valueOf(Boolean.TRUE));
                                 checkLocation = locationSetting.getValue().equals(String.valueOf(Boolean.TRUE));
@@ -283,16 +283,17 @@ public class ForegroundService extends Service implements ServiceConnection {
      *
      * @return a reference to the <code>SensePlatform</code>.
      */
-    protected synchronized SensePlatform getSensePlatform() {
+    public synchronized SensePlatform getSensePlatform() {
+
         return this.sensePlatform;
     }
 
     /**
-     * Initializes the
+     * Initializes the notification of the running foreground service.
      *
-     * @return
+     * @return the Notification for this running foreground service.
      */
-    protected Notification initNotification() {
+    public Notification initNotification() {
 
         if(notificationManager == null) {
             Log.w(TAG, "notificationManager == null");
@@ -310,18 +311,11 @@ public class ForegroundService extends Service implements ServiceConnection {
             Log.e(TAG, "Could not retrieve USER_KEY from local DB: : ", e);
         }
 
-        Intent intent = new Intent(this, MainActivity.class);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
-        Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ask_icon_gray)
-                .setContentTitle(getString(R.string.app_started))
-                .setContentText(getString(R.string.logged_in_as, user))
-                .setWhen(System.currentTimeMillis())
-                .setAutoCancel(false)
-                .setContentIntent(pendingIntent)
-                .build();
+        Notification notification = this.createNotification(
+                R.drawable.ask_icon_gray,
+                getString(R.string.app_started),
+                getString(R.string.logged_in_as, user),
+                false);
 
         notificationManager.notify(SERVICE_ID, notification);
 
@@ -329,9 +323,9 @@ public class ForegroundService extends Service implements ServiceConnection {
     }
 
     /**
+     * Send a new a new Notification with a given <code>message</code>.
      *
-     *
-     * @param message
+     * @param message a new a new Notification
      */
     public void sendNotification(String message) {
 
@@ -339,19 +333,42 @@ public class ForegroundService extends Service implements ServiceConnection {
             Log.w(TAG, "notificationManager == null");
         }
 
+        Notification notification = this.createNotification(
+                R.drawable.ask_icon_red,
+                getString(R.string.state_change),
+                message,
+                true);
+
+        notificationManager.notify(Long.valueOf(System.currentTimeMillis()).hashCode(), notification);
+    }
+
+    /**
+     * Creates a new Notification.
+     *
+     * @param icon the icon the Notification should display.
+     * @param title the title of the Notification.
+     * @param message the message of the Notification.
+     * @param autoCancel indicates if the Notification is to be cancelled when pressed.
+     * @return a new Notification.
+     */
+    private Notification createNotification(int icon, String title, String message, boolean autoCancel) {
+
+        if(notificationManager == null) {
+            Log.w(TAG, "notificationManager == null");
+            return null;
+        }
+
         Intent intent = new Intent(this, MainActivity.class);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-        Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ask_icon_red)
-                .setContentTitle(getString(R.string.state_change))
+        return new NotificationCompat.Builder(this)
+                .setSmallIcon(icon)
+                .setContentTitle(title)
                 .setContentText(message)
                 .setWhen(System.currentTimeMillis())
-                .setAutoCancel(true)
+                .setAutoCancel(autoCancel)
                 .setContentIntent(pendingIntent)
                 .build();
-
-        notificationManager.notify(Long.valueOf(System.currentTimeMillis()).hashCode(), notification);
     }
 }
