@@ -132,6 +132,6 @@ public class State {
      */
     @Override
     public String toString() {
-        return String.format("%s: %s", FORMATTER.format(timestamp), value);
+        return String.format("%s%n%s", FORMATTER.format(timestamp), value);
     }
 }

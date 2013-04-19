@@ -7,7 +7,7 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:padding="20dp">
 
         <RelativeLayout
@@ -51,7 +51,7 @@
             android:layout_height="fill_parent"
             android:paddingLeft="48dp"
             android:paddingBottom="15dp"
-            android:textSize="14dp"/>
+            android:textSize="16dp"/>
 
         <CheckBox
             android:id="@+id/id_checkbox_location"
@@ -66,7 +66,7 @@
             android:layout_height="fill_parent"
             android:paddingLeft="48dp"
             android:paddingBottom="15dp"
-            android:textSize="14dp"/>
+            android:textSize="16dp"/>
 
         <CheckBox
             android:id="@+id/id_checkbox_presence"
@@ -81,12 +81,69 @@
             android:layout_height="fill_parent"
             android:paddingLeft="48dp"
             android:paddingBottom="15dp"
-            android:textSize="14dp"/>
+            android:textSize="16dp"/>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="@string/poll_sense_interval"
+                android:paddingBottom="15dp"
+                android:textSize="22dp"/>
+
+            <Button
+                android:id="@+id/poll_sense"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="@string/sample_rate"
+                android:paddingBottom="15dp"
+                android:textSize="22dp"/>
+
+            <Button
+                android:id="@+id/sample_rate"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="@string/sync_rate"
+                android:paddingBottom="15dp"
+                android:textSize="22dp"/>
+
+            <Button
+                android:id="@+id/sync_rate"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"/>
+
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="20dp">
+            android:paddingTop="15dp">
 
             <Button
                 android:id="@+id/id_logout"

@@ -8,9 +8,9 @@
         you will receive a notification in the top bar of your phone.
     </string>
 
-    <string name="activity"> activity sensor</string>
-    <string name="location"> location sensor</string>
-    <string name="presence"> presence sensor</string>
+    <string name="activity">  activity sensor</string>
+    <string name="location">  location sensor</string>
+    <string name="presence">  reachability sensor</string>
 
     <string name="enabled">enabled</string>
     <string name="disabled">disabled</string>
@@ -31,6 +31,10 @@
     <string name="registering">Trying to register…</string>
     <string name="welcome_user">Hello %1$s!</string>
 
+    <string name="poll_sense_interval">poll Sense interval</string>
+    <string name="sample_rate">sample rate</string>
+    <string name="sync_rate">sync rate</string>
+
     <string name="no_login_connection">Could not login. Check your connection.</string>
     <string name="no_login_credentials">Invalid username or password.</string>
     <string name="no_login_other">Could not login. Unexpected result: %1$s</string>
@@ -47,6 +51,23 @@
     <string name="app_started">Ask Sense Demo started</string>
 
     <string name="state_change">state change</string>
+
+    <string name="sync_rarely">30 min</string>
+    <string name="sync_normal">5 min</string>
+    <string name="sync_often">~1 min</string>
+    <string name="sync_real_time">real time</string>
+
+    <string name="sample_eco_mode">~15 min</string>
+    <string name="sample_normal">~5 min</string>
+    <string name="sample_often">~10 sec</string>
+    <string name="sample_real_time">real time</string>
+
+    <string name="poll_sense_5s">5 sec</string>
+    <string name="poll_sense_10s">10 sec</string>
+    <string name="poll_sense_30s">30 sec</string>
+    <string name="poll_sense_1m">1 min</string>
+    <string name="poll_sense_5m">5 min</string>
+
 
     <!-- <SENSE> -->
     <!-- OVERRIDE INTENT ACTIONS FOR BUNDLED SENSE PLATFORM (ALSO CHANGE IN MANIFEST!!) -->

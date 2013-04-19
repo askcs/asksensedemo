@@ -16,61 +16,19 @@ public class PollSenseTask extends TimerTask {
     private static final String TAG = PollSenseTask.class.getName();
 
     private final ForegroundService service;
+    private final long pause;
 
-    public PollSenseTask(ForegroundService service) {
+    public PollSenseTask(ForegroundService service, long pause) {
 
         this.service = service;
-    }
-
-    private void check(boolean doCheck, String stateKey) {
-
-        if(doCheck) {
-
-            Dao<State, String> stateDao = service.getHelper().getStateDao();
-
-            try {
-                int limit = 1;
-                JSONArray data = service.getSensePlatform().getData(stateKey, false, limit);
-
-                Log.d(TAG, "--> limit=" + limit + ", data.length=" + data.length());
-
-                State last = stateDao.queryForId(stateKey);
-
-                if(data.length() > 0) {
-
-                    JSONObject obj = (JSONObject)data.get(0);
-                    State state = new State(stateKey, obj.getString("value"), obj.getLong("timestamp"));
-
-                    Log.d(TAG, stateKey + " :: last state -> " + state);
-
-                    if(state.equals(last)) {
-                        Log.d(TAG, "no state change between last=[" + last + "] and state=[" + state + "]");
-                    }
-                    else {
-
-                        String message = String.format("%s -> %s", last.getValue(), state.getValue());
-
-                        Log.i(TAG, message);
-
-                        last.setValue(state.getValue());
-                        last.setTimestamp(state.getTimestamp());
-                        stateDao.update(last);
-
-                        service.sendNotification(message);
-                    }
-                }
-            } catch(Exception e) {
-                Log.e(TAG, "Oops: ", e);
-            }
-        }
-        else {
-            Log.d(TAG, "skipping " + stateKey);
-        }
+        this.pause = pause;
     }
 
     @Override
     public void run() {
         try {
+
+            Log.d(TAG, "ticking every " + (pause / 1000)+ " seconds");
 
             Dao<Setting, String> settingDao = service.getHelper().getSettingDao();
 
@@ -97,6 +55,49 @@ public class PollSenseTask extends TimerTask {
         }
         catch (Exception e) {
             Log.e(TAG, "Oops: ", e);
+        }
+    }
+
+    private void check(boolean doCheck, String stateKey) {
+
+        if(doCheck) {
+
+            Dao<State, String> stateDao = service.getHelper().getStateDao();
+
+            try {
+                int limit = 1;
+                JSONArray data = service.getSensePlatform().getData(stateKey, false, limit);
+
+                Log.d(TAG, "--> limit=" + limit + ", data.length=" + data.length());
+
+                State last = stateDao.queryForId(stateKey);
+
+                if(data.length() > 0) {
+
+                    JSONObject obj = (JSONObject)data.get(0);
+                    State state = new State(stateKey, obj.getString("value"), obj.getLong("timestamp"));
+
+                    Log.d(TAG, stateKey + " :: last state -> " + state);
+
+                    if(!state.equals(last)) {
+
+                        String message = String.format("%s -> %s", last.getValue(), state.getValue());
+
+                        Log.i(TAG, message);
+
+                        last.setValue(state.getValue());
+                        last.setTimestamp(state.getTimestamp());
+                        stateDao.update(last);
+
+                        service.sendNotification(message);
+                    }
+                }
+            } catch(Exception e) {
+                Log.e(TAG, "Oops: ", e);
+            }
+        }
+        else {
+            Log.d(TAG, "skipping " + stateKey);
         }
     }
 }

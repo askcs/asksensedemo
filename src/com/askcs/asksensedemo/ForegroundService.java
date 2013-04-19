@@ -271,7 +271,7 @@ public class ForegroundService extends Service implements ServiceConnection {
             final long delay = 2000L;
             final long pause = Integer.valueOf(pollSecondsSetting.getValue()) * 1000L;
 
-            timer.schedule(new PollSenseTask(this), delay, pause);
+            timer.schedule(new PollSenseTask(this, pause), delay, pause);
 
         } catch (Exception e) {
             Log.e(TAG, "there's a problem while starting sense library: ", e);

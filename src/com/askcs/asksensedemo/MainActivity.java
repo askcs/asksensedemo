@@ -15,6 +15,8 @@ import com.j256.ormlite.dao.Dao;
 
 import java.lang.ref.WeakReference;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.askcs.asksensedemo.MessageType.*;
 
@@ -124,6 +126,7 @@ public class MainActivity extends Activity {
         bindToService();
 
         readStates();
+        readSettings();
     }
 
     private void bindToService() {
@@ -179,7 +182,7 @@ public class MainActivity extends Activity {
     private void readStates() {
 
         try {
-            // Get the most recent states and update the GUI text views.
+            // Get the most recent states and update the GUI components with said values.
 
             final Dao<State, String> stateDao = this.getHelper().getStateDao();
 
@@ -200,6 +203,101 @@ public class MainActivity extends Activity {
         catch (SQLException e) {
             Log.e(TAG, "Oops: ", e);
         }
+    }
+
+    private void readSettings() {
+
+        try {
+
+            final Dao<Setting, String> settingDao = this.getHelper().getSettingDao();
+
+            // Display the presently selected poll-Sense setting.
+            setButton(settingDao.queryForId(Setting.POLL_SENSE_SECONDS_KEY),
+                    R.array.poll_sense_labels,
+                    R.array.poll_sense_values,
+                    R.id.poll_sense);
+
+            // Display the presently selected sample-rate setting.
+            setButton(settingDao.queryForId(Setting.SAMPLE_RATE_KEY),
+                    R.array.sample_rate_labels,
+                    R.array.sample_rate_values,
+                    R.id.sample_rate);
+
+            // Display the presently selected sync-rate setting.
+            setButton(settingDao.queryForId(Setting.SYNC_RATE_KEY),
+                    R.array.sync_rate_labels,
+                    R.array.sync_rate_values,
+                    R.id.sync_rate);
+
+        } catch (SQLException e) {
+            Log.e(TAG, "Could not read setting from local DB: ", e);
+        }
+    }
+
+    private void setButton(final Setting setting, int labelsId, int valuesId, int buttonId) {
+
+        String selectedValue = setting.getValue();
+
+        final String[] labelsArray = getResources().getStringArray(labelsId);
+        final String[] valuesArray = getResources().getStringArray(valuesId);
+
+        final List<String> labels = Arrays.asList(labelsArray);
+        final List<String> values = Arrays.asList(valuesArray);
+
+        final int indexSelectedValue = values.indexOf(selectedValue);
+
+        if(indexSelectedValue < 0) {
+            Log.w(TAG, "this should not have happened: `indexSelectedValue < 0`, setting=" + setting);
+            return;
+        }
+
+        final Button button = (Button) super.findViewById(buttonId);
+
+        button.setText(labels.get(indexSelectedValue));
+
+        // Listen for clicks on the settings button.
+        button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+
+                final AlertDialog.Builder optionsDialog = new AlertDialog.Builder(MainActivity.this);
+
+                // Listen for clicks on one of the popped up options.
+                optionsDialog.setSingleChoiceItems(labelsArray,
+                        values.indexOf(setting.getValue()), new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int index) {
+
+                        final Dao<Setting, String> settingDao = MainActivity.this.getHelper().getSettingDao();
+
+                        button.setText(labelsArray[index]);
+
+                        try {
+                            setting.setValue(valuesArray[index]);
+                            settingDao.update(setting);
+
+                        } catch (SQLException e) {
+                            Log.e(TAG, "could not save setting: " + setting, e);
+                        }
+
+                        try {
+                            MainActivity.this.serviceMessenger.send(Message.obtain(null, SETTING_CHANGED));
+
+                        } catch (RemoteException e) {
+                            Log.e(TAG, "could not send SETTING_CHANGED message to service: ", e);
+                        }
+
+                        dialog.dismiss();
+                    }
+                });
+
+                // Create and show the options selection dialog.
+                optionsDialog.create();
+                optionsDialog.show();
+            }
+        });
     }
 
     @Override
@@ -243,7 +341,7 @@ public class MainActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     try {
-                        // Upon change, update the setting in the local DB.
+                        // Upon a state change, update the setting in the local DB.
                         String newValue = checkBox.isChecked() ? String.valueOf(Boolean.TRUE) : String.valueOf(Boolean.FALSE);
                         enabledSetting.setValue(newValue);
                         Log.d(TAG, "update setting: " + enabledSetting);
