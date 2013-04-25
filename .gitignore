@@ -1,7 +1,10 @@
 # generated and compiled folders
 bin/
+target/
 gen/
 out/
+classes/
+tmp/
 
 # local files/folders
 local.properties
