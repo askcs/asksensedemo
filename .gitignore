@@ -2,6 +2,7 @@
 bin/
 target/
 gen/
+gen-external-apklibs/
 out/
 classes/
 tmp/
