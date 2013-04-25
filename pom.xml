@@ -97,6 +97,22 @@
                 </configuration>
             </plugin>
             
+            <plugin>
+               <groupId>org.codehaus.mojo</groupId>
+               <artifactId>exec-maven-plugin</artifactId>
+               <version>1.2.1</version>
+               <configuration>
+                    <executable>mvn</executable>
+                    <arguments>
+                        <argument>android:undeploy</argument>
+                        <argument>clean</argument>
+                        <argument>install</argument>
+                        <argument>android:deploy</argument>
+                        <argument>android:run</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+            
         </plugins>
         
     </build>
