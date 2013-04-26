@@ -9,12 +9,12 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-public class MainActivityTest {
+public class RegisterActivityTest {
 
     @Test
     public void notNullTest() throws Exception {
 
-        MainActivity activity = new MainActivity();
+        RegisterActivity activity = new RegisterActivity();
 
         activity.onCreate(null);
 
