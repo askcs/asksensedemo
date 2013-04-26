@@ -7,6 +7,9 @@ Put the following files and folders into a zip file called, for example,
 ProjectName-1.0-SNAPSHOT.zip
  |
  |`- src/
+ |    `- main/
+ |        `-java
+ |           `- com/...
  |`- res/
  |`- AndroidManifest.xml
   `- project.properties
@@ -17,6 +20,9 @@ and then rename the zip file:
 ```
 mv ProjectName-1.0-SNAPSHOT.zip ProjectName-1.0-SNAPSHOT.apklib
 ```
+
+Note, you **must** add the source files of the project inside `src/main/java` 
+so that Maven can find them.
 
 ## Adding and .apklib file to your local maven repository
 
