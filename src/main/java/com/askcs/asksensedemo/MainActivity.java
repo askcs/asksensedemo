@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getName();
 
     // The messenger that can be used to send Messages to the foreground service.
-    protected Messenger serviceMessenger = null;
+    private Messenger serviceMessenger = null;
 
     // The Messenger of this Activity that handles incoming messages.
     private Messenger activityMessenger = null;
@@ -434,7 +434,7 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Returns a DatabaseHelper.
+     * Lazily returns a DatabaseHelper.
      *
      * @return a DatabaseHelper.
      */

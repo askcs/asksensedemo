@@ -27,17 +27,21 @@ public final class Utils {
      *                          available (very unlikely though).
      */
     public static String md5(String input) {
+
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] messageDigest = md.digest(input.getBytes());
             BigInteger number = new BigInteger(1, messageDigest);
-            String md5 = number.toString(16);
 
-            while (md5.length() < 32) {
-                md5 = "0" + md5;
+            String hex = number.toString(16);
+            StringBuilder md5Builder = new StringBuilder(hex);
+
+            // Prepend zeros as long as the builder contains less than 32 chars.
+            while (md5Builder.length() < 32) {
+                md5Builder.insert(0, '0');
             }
 
-            return md5;
+            return md5Builder.toString();
 
         } catch (NoSuchAlgorithmException e) {
             Log.e(TAG, e.getLocalizedMessage());

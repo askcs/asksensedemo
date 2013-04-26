@@ -25,11 +25,16 @@ import java.util.Map;
  */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
+    // The log tag.
     private static final String TAG = DatabaseHelper.class.getName();
 
+    // The database name.
     private static final String DATABASE_NAME = "ask_sense_demo.db";
+
+    // The database version.
     private static final int DATABASE_VERSION = 1;
 
+    // A map acting as a cache of DAO instances.
     private Map<Class, Dao> daoMap = null;
 
     /**
@@ -61,8 +66,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                 TableUtils.createTable(connectionSource, tableClass);
             }
 
-            // Add some default settings and states.
+            final long time = new Date().getTime();
 
+            // Add default settings.
             this.getDao(Setting.class, String.class).create(new Setting(Setting.ACTIVITY_ENABLED_KEY, String.valueOf(Boolean.FALSE)));
             this.getDao(Setting.class, String.class).create(new Setting(Setting.LOCATION_ENABLED_KEY, String.valueOf(Boolean.FALSE)));
             this.getDao(Setting.class, String.class).create(new Setting(Setting.REACHABILITY_ENABLED_KEY, String.valueOf(Boolean.FALSE)));
@@ -73,11 +79,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             this.getDao(Setting.class, String.class).create(new Setting(Setting.SYNC_RATE_KEY, "-2"));
             this.getDao(Setting.class, String.class).create(new Setting(Setting.POLL_SENSE_SECONDS_KEY, "10"));
 
-            final long time = new Date().getTime();
-
-            this.getDao(State.class, String.class).create(new State(State.ACTIVITY_KEY, "", time));
-            this.getDao(State.class, String.class).create(new State(State.LOCATION_KEY, "", time));
-            this.getDao(State.class, String.class).create(new State(State.REACHABILITY_KEY, "", time));
+            // Add default states.
+            this.getDao(State.class, String.class).create(new State(State.ACTIVITY_KEY, "-", time));
+            this.getDao(State.class, String.class).create(new State(State.LOCATION_KEY, "-", time));
+            this.getDao(State.class, String.class).create(new State(State.REACHABILITY_KEY, "-", time));
 
         } catch (SQLException e) {
             Log.e(TAG, "Can't create database", e);

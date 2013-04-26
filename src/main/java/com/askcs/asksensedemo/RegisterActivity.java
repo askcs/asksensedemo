@@ -15,12 +15,22 @@ import com.askcs.asksensedemo.util.Utils;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
+/**
+ * The Activity responsible to let the user register a new Sense account.
+ */
 public class RegisterActivity extends Activity {
 
+    // The log tag.
     private static final String TAG = RegisterActivity.class.getName();
 
+    // The local SQLite database helper to retrieve DAO instances from.
     private DatabaseHelper databaseHelper = null;
 
+    /**
+     * Called when this Activity is created.
+     *
+     * @param savedInstanceState the saved instance state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -64,7 +74,6 @@ public class RegisterActivity extends Activity {
                     password1.requestFocus();
                 }
                 else {
-
                     Dao<Setting, String> dao = RegisterActivity.this.getHelper().getDao(Setting.class, String.class);
 
                     RegisterTask task = new RegisterTask(RegisterActivity.this, usernameValue, Utils.md5(passwordValue1), dao);
@@ -74,6 +83,9 @@ public class RegisterActivity extends Activity {
         });
     }
 
+    /**
+     * Called when this Activity is destroyed.
+     */
     @Override
     protected void onDestroy() {
 
@@ -86,6 +98,11 @@ public class RegisterActivity extends Activity {
         }
     }
 
+    /**
+     * Lazily returns a DatabaseHelper.
+     *
+     * @return a DatabaseHelper.
+     */
     public DatabaseHelper getHelper() {
 
         if (databaseHelper == null) {

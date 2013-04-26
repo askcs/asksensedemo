@@ -15,12 +15,22 @@ import com.askcs.asksensedemo.util.Utils;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
+/**
+ * The Activity responsible for letting the user log into Sense.
+ */
 public class LoginActivity extends Activity {
 
+    // The log tag.
     private static final String TAG = LoginActivity.class.getName();
 
+    // The local SQLite database helper to retrieve DAO instances from.
     private DatabaseHelper databaseHelper = null;
 
+    /**
+     * Called when this Activity is created.
+     *
+     * @param savedInstanceState the saved instance state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -51,11 +61,12 @@ public class LoginActivity extends Activity {
                 if (usernameValue.isEmpty()) {
                     error.setText(getString(R.string.enter_username));
                     username.requestFocus();
-                } else if (passwordValue.isEmpty()) {
+                }
+                else if (passwordValue.isEmpty()) {
                     error.setText(getString(R.string.enter_password));
                     password.requestFocus();
-                } else {
-
+                }
+                else {
                     Dao<Setting, String> dao = LoginActivity.this.getHelper().getDao(Setting.class, String.class);
 
                     LoginTask task = new LoginTask(LoginActivity.this, usernameValue, Utils.md5(passwordValue), dao);
@@ -72,6 +83,9 @@ public class LoginActivity extends Activity {
         });
     }
 
+    /**
+     * Called when this Activity is destroyed.
+     */
     @Override
     protected void onDestroy() {
 
@@ -84,6 +98,11 @@ public class LoginActivity extends Activity {
         }
     }
 
+    /**
+     * Lazily returns a DatabaseHelper.
+     *
+     * @return a DatabaseHelper.
+     */
     public DatabaseHelper getHelper() {
 
         if (databaseHelper == null) {
