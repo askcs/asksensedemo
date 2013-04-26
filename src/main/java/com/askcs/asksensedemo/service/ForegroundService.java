@@ -231,7 +231,7 @@ public class ForegroundService extends Service implements ServiceConnection {
     public void onServiceConnected(ComponentName componentName, IBinder binder) {
         try {
 
-            Dao<Setting, String> dao = this.getHelper().getSettingDao();
+            Dao<Setting, String> dao = this.getHelper().getDao(Setting.class, String.class);
             Setting userSetting = dao.queryForId(Setting.USER_KEY);
             Setting passwordSetting = dao.queryForId(Setting.PASSWORD_KEY);
 
@@ -254,7 +254,7 @@ public class ForegroundService extends Service implements ServiceConnection {
 
         try {
             ISenseService service = getSensePlatform().getService();
-            Dao<Setting, String> dao = this.getHelper().getSettingDao();
+            Dao<Setting, String> dao = this.getHelper().getDao(Setting.class, String.class);
 
             Setting sampleRateSetting = dao.queryForId(Setting.SAMPLE_RATE_KEY);
             Setting syncRateSetting = dao.queryForId(Setting.SYNC_RATE_KEY);
@@ -325,7 +325,7 @@ public class ForegroundService extends Service implements ServiceConnection {
         String user = "unknown";
 
         try {
-            Dao<Setting, String> dao = getHelper().getSettingDao();
+            Dao<Setting, String> dao = getHelper().getDao(Setting.class, String.class);
             Setting userSetting = dao.queryForId(Setting.USER_KEY);
             user = userSetting.getValue();
         } catch (SQLException e) {

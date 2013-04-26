@@ -47,7 +47,7 @@ public final class PollSenseTask extends TimerTask {
 
         Log.d(TAG, "ticking every " + (pause / 1000) + " seconds");
 
-        Dao<Setting, String> settingDao = service.getHelper().getSettingDao();
+        Dao<Setting, String> settingDao = service.getHelper().getDao(Setting.class, String.class);
 
         // Let's assume none of the state sensors need to be polled.
         boolean checkActivity = false;
@@ -91,7 +91,7 @@ public final class PollSenseTask extends TimerTask {
             // Check if Sense returned at least 1 value.
             if (data.length() > 0) {
 
-                Dao<State, String> stateDao = service.getHelper().getStateDao();
+                Dao<State, String> stateDao = service.getHelper().getDao(State.class, String.class);
 
                 // Get the most recent entry from the local DB.
                 State mostRecentLocal = stateDao.queryForId(stateKey);

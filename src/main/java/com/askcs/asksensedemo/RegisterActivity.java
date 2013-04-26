@@ -65,7 +65,7 @@ public class RegisterActivity extends Activity {
                 }
                 else {
 
-                    Dao<Setting, String> dao = RegisterActivity.this.getHelper().getSettingDao();
+                    Dao<Setting, String> dao = RegisterActivity.this.getHelper().getDao(Setting.class, String.class);
 
                     RegisterTask task = new RegisterTask(RegisterActivity.this, usernameValue, Utils.md5(passwordValue1), dao);
                     task.execute();

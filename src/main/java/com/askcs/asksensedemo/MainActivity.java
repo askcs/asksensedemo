@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getName();
 
     // The messenger that can be used to send Messages to the foreground service.
-    private Messenger serviceMessenger = null;
+    protected Messenger serviceMessenger = null;
 
     // The Messenger of this Activity that handles incoming messages.
     private Messenger activityMessenger = null;
@@ -113,7 +113,7 @@ public class MainActivity extends Activity {
         else {
             startService(new Intent(this, ForegroundService.class));
 
-            final Dao<Setting, String> settingDao = this.getHelper().getSettingDao();
+            final Dao<Setting, String> settingDao = this.getHelper().getDao(Setting.class, String.class);
 
             super.setContentView(R.layout.main);
 
@@ -208,7 +208,7 @@ public class MainActivity extends Activity {
      */
     private boolean isLoggedIn() {
 
-        final Dao<Setting, String> settingDao = this.getHelper().getSettingDao();
+        final Dao<Setting, String> settingDao = this.getHelper().getDao(Setting.class, String.class);
 
         try {
             final Setting loggedInSetting = settingDao.queryForId(Setting.LOGGED_IN_KEY);
@@ -231,7 +231,7 @@ public class MainActivity extends Activity {
         try {
             // Get the most recent states and update the GUI components with said values.
 
-            final Dao<State, String> stateDao = this.getHelper().getStateDao();
+            final Dao<State, String> stateDao = this.getHelper().getDao(State.class, String.class);
 
             State activityState = stateDao.queryForId(State.ACTIVITY_KEY);
             State locationState = stateDao.queryForId(State.LOCATION_KEY);
@@ -260,7 +260,7 @@ public class MainActivity extends Activity {
 
         try {
 
-            final Dao<Setting, String> settingDao = this.getHelper().getSettingDao();
+            final Dao<Setting, String> settingDao = this.getHelper().getDao(Setting.class, String.class);
 
             // Display the presently selected poll-Sense setting.
             setButton(settingDao.queryForId(Setting.POLL_SENSE_SECONDS_KEY),
@@ -333,7 +333,7 @@ public class MainActivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int index) {
 
-                        final Dao<Setting, String> settingDao = MainActivity.this.getHelper().getSettingDao();
+                        final Dao<Setting, String> settingDao = MainActivity.this.getHelper().getDao(Setting.class, String.class);
 
                         button.setText(labelsArray[index]);
 
@@ -400,7 +400,7 @@ public class MainActivity extends Activity {
      */
     private void initStateCheckBox(int checkboxId, final String key) {
 
-        final Dao<Setting, String> dao = this.getHelper().getSettingDao();
+        final Dao<Setting, String> dao = this.getHelper().getDao(Setting.class, String.class);
 
         final CheckBox checkBox = (CheckBox)super.findViewById(checkboxId);
 

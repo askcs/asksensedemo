@@ -11,23 +11,20 @@ import android.util.Log;
  */
 public final class Utils {
 
+    // The log tag.
     private static final String TAG = Utils.class.getName();
 
+    // Private constructor: no need to instantiate this class.
     private Utils() {
-        // No need to instantiate this class.
     }
 
     /**
      * Creates an MD5 hash from a given string.
      *
-     * @param input
-     *         the string to generate the MD% hash from.
-     *
+     * @param input the string to generate the MD% hash from.
      * @return an MD5 hash from a given string.
-     *
-     * @throws RuntimeException
-     *         if the MD5 hashing algorithm is not
-     *         available (very unlikely though).
+     * @throws RuntimeException if the MD5 hashing algorithm is not
+     *                          available (very unlikely though).
      */
     public static String md5(String input) {
         try {
@@ -41,8 +38,8 @@ public final class Utils {
             }
 
             return md5;
-        }
-        catch (NoSuchAlgorithmException e) {
+
+        } catch (NoSuchAlgorithmException e) {
             Log.e(TAG, e.getLocalizedMessage());
             throw new RuntimeException(e);
         }

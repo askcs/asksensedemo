@@ -56,7 +56,7 @@ public class LoginActivity extends Activity {
                     password.requestFocus();
                 } else {
 
-                    Dao<Setting, String> dao = LoginActivity.this.getHelper().getSettingDao();
+                    Dao<Setting, String> dao = LoginActivity.this.getHelper().getDao(Setting.class, String.class);
 
                     LoginTask task = new LoginTask(LoginActivity.this, usernameValue, Utils.md5(passwordValue), dao);
                     task.execute();
