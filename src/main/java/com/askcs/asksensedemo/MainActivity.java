@@ -21,28 +21,54 @@ import java.util.List;
 
 import static com.askcs.asksensedemo.service.MessageType.*;
 
+/**
+ * The main Activity of this App. If the username and hashed password are
+ * still in the local DB, this Activity is created, and if not, the
+ * #LoginActivity is started.
+ *
+ * This Activity also connects to the #service.ForegroundService when it is
+ * created (and disconnects when destroyed!) so that the foreground service
+ * can notify this Activity when a state change has happened (and this
+ * Activity can update the GUI components holding this information).
+ *
+ * It also works the other way around: when the user change a setting, this
+ * Activity notifies the foreground service about this.
+ */
 public class MainActivity extends Activity {
 
+    // The log tag.
     private static final String TAG = MainActivity.class.getName();
 
-    // TODO
+    // The messenger that can be used to send Messages to the foreground service.
     private Messenger serviceMessenger = null;
 
     // The Messenger of this Activity that handles incoming messages.
     private Messenger activityMessenger = null;
 
-    // TODO
+    // The local SQLite database helper to retrieve DAO instances from.
     private DatabaseHelper databaseHelper = null;
 
     // A handler receiving Messages from the fore ground service it is bound to.
     static final class ActivityHandler extends Handler {
 
+        // Use a weak reference: the enclosing Activity might be destroyed,
+        // resulting in leaking service connections.
         private final WeakReference<MainActivity> reference;
 
+        /**
+         * Creates a new ActivityHandler instance.
+         *
+         * @param activity the Activity it was created from.
+         */
         ActivityHandler(MainActivity activity) {
             reference = new WeakReference<MainActivity>(activity);
         }
 
+        /**
+         * Handles incoming messages.
+         *
+         * @param message the incoming Message.
+         */
         @Override
         public void handleMessage(Message message) {
 
@@ -65,6 +91,11 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * Called when this Activity is created.
+     *
+     * @param savedInstanceState the saved instance state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -72,64 +103,75 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
-        checkLoggedIn();
+        if(!isLoggedIn()) {
+            // If the user is not logged in, start the login Activity.
+            startActivity(new Intent(this, LoginActivity.class));
 
-        final Dao<Setting, String> settingDao = this.getHelper().getSettingDao();
+            // Call finish() so that the back button cannot take the user back to this activity.
+            finish();
+        }
+        else {
+            startService(new Intent(this, ForegroundService.class));
 
-        final Intent serviceIntent = new Intent(this, ForegroundService.class);
+            final Dao<Setting, String> settingDao = this.getHelper().getSettingDao();
 
-        super.setContentView(R.layout.main);
+            super.setContentView(R.layout.main);
 
-        init(R.id.id_checkbox_activity, Setting.ACTIVITY_ENABLED_KEY);
-        init(R.id.id_checkbox_location, Setting.LOCATION_ENABLED_KEY);
-        init(R.id.id_checkbox_presence, Setting.REACHABILITY_ENABLED_KEY);
+            initStateCheckBox(R.id.id_checkbox_activity, Setting.ACTIVITY_ENABLED_KEY);
+            initStateCheckBox(R.id.id_checkbox_location, Setting.LOCATION_ENABLED_KEY);
+            initStateCheckBox(R.id.id_checkbox_presence, Setting.REACHABILITY_ENABLED_KEY);
 
-        findViewById(R.id.id_logout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setMessage(R.string.confirm_logout)
-                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                try {
-                                    Setting userSetting = settingDao.queryForId(Setting.USER_KEY);
-                                    Setting passwordSetting = settingDao.queryForId(Setting.PASSWORD_KEY);
-                                    Setting loggedInSetting = settingDao.queryForId(Setting.LOGGED_IN_KEY);
+            final Activity activity = MainActivity.this;
 
-                                    userSetting.setValue("");
-                                    passwordSetting.setValue("");
-                                    loggedInSetting.setValue(String.valueOf(Boolean.FALSE));
+            findViewById(R.id.id_logout).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage(R.string.confirm_logout)
+                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    try {
+                                        Setting userSetting = settingDao.queryForId(Setting.USER_KEY);
+                                        Setting passwordSetting = settingDao.queryForId(Setting.PASSWORD_KEY);
+                                        Setting loggedInSetting = settingDao.queryForId(Setting.LOGGED_IN_KEY);
 
-                                    settingDao.update(userSetting);
-                                    settingDao.update(passwordSetting);
-                                    settingDao.update(loggedInSetting);
+                                        userSetting.setValue("");
+                                        passwordSetting.setValue("");
+                                        loggedInSetting.setValue(String.valueOf(Boolean.FALSE));
 
-                                    MainActivity.this.stopService(serviceIntent);
-                                    MainActivity.this.finish();
+                                        settingDao.update(userSetting);
+                                        settingDao.update(passwordSetting);
+                                        settingDao.update(loggedInSetting);
+
+                                        activity.stopService(new Intent(activity, ForegroundService.class));
+                                        activity.finish();
+                                    }
+                                    catch (SQLException e) {
+                                        Log.e(TAG, "there was a problem retrieving data from the local DB: ", e);
+                                    }
                                 }
-                                catch (SQLException e) {
-                                    Log.e(TAG, "Oops: ", e);
+                            })
+                            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // Cancelled, do nothing.
                                 }
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // Cancelled, do nothing.
-                            }
-                        })
-                        .create()
-                        .show();
-            }
-        });
+                            })
+                            .create()
+                            .show();
+                }
+            });
 
-        this.activityMessenger = new Messenger(new ActivityHandler(this));
+            this.activityMessenger = new Messenger(new ActivityHandler(this));
 
-        bindToService();
-
-        readStates();
-        readSettings();
+            bindToService();
+            readStates();
+            readSettings();
+        }
     }
 
+    /**
+     * Binds this Activity to the foreground service.
+     */
     private void bindToService() {
 
         final ServiceConnection connection = new ServiceConnection() {
@@ -158,7 +200,13 @@ public class MainActivity extends Activity {
         bindService(new Intent(this, ForegroundService.class), connection, Context.BIND_AUTO_CREATE);
     }
 
-    private void checkLoggedIn() {
+    /**
+     * Returns true iff the user is logged in (if the Setting.LOGGED_IN_KEY
+     * in the local DB is set to TRUE).
+     *
+     * @return true iff the user is logged in.
+     */
+    private boolean isLoggedIn() {
 
         final Dao<Setting, String> settingDao = this.getHelper().getSettingDao();
 
@@ -167,19 +215,17 @@ public class MainActivity extends Activity {
 
             Log.d(TAG, "loggedInSetting=" + loggedInSetting);
 
-            if(!loggedInSetting.getValue().equals(String.valueOf(Boolean.TRUE))) {
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
-            }
-            else {
-                startService(new Intent(this, ForegroundService.class));
-            }
+            return loggedInSetting.getValue().equals(String.valueOf(Boolean.TRUE));
         }
         catch (SQLException e) {
             Log.e(TAG, "Oops: ", e);
+            return false;
         }
     }
 
+    /**
+     * Updates all TextViews to show the most recent values of the state sensors.
+     */
     private void readStates() {
 
         try {
@@ -206,6 +252,10 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * Reads all settings from the local DB and updates the button's that
+     * show these values.
+     */
     private void readSettings() {
 
         try {
@@ -235,13 +285,25 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * Set text on a specific setting-button and also associates an array
+     * of options that is to be presented to the user when the button is
+     * pressed.
+     *
+     * @param setting the Setting representing the current value.
+     * @param labelsId the id pointing to the array of labels (human
+     *                 readable). See values/constants.xml for these
+     *                 values.
+     * @param valuesId the id pointing to the array of values. See
+     *                 values/constants.xml for these values.
+     * @param buttonId the id of the button.
+     */
     private void setButton(final Setting setting, int labelsId, int valuesId, int buttonId) {
 
         String selectedValue = setting.getValue();
 
         final String[] labelsArray = getResources().getStringArray(labelsId);
         final String[] valuesArray = getResources().getStringArray(valuesId);
-
         final List<String> labels = Arrays.asList(labelsArray);
         final List<String> values = Arrays.asList(valuesArray);
 
@@ -256,7 +318,7 @@ public class MainActivity extends Activity {
 
         button.setText(labels.get(indexSelectedValue));
 
-        // Listen for clicks on the settings button.
+        // Listen for clicks on the settings-button.
         button.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -276,18 +338,15 @@ public class MainActivity extends Activity {
                         button.setText(labelsArray[index]);
 
                         try {
+                            // Update the DB with this new value.
                             setting.setValue(valuesArray[index]);
                             settingDao.update(setting);
 
-                        } catch (SQLException e) {
-                            Log.e(TAG, "could not save setting: " + setting, e);
-                        }
-
-                        try {
+                            // Inform the service of this setting change.
                             MainActivity.this.serviceMessenger.send(Message.obtain(null, SETTING_CHANGED));
 
-                        } catch (RemoteException e) {
-                            Log.e(TAG, "could not send SETTING_CHANGED message to service: ", e);
+                        } catch (Exception e) {
+                            Log.e(TAG, "could not change setting: " + setting, e);
                         }
 
                         dialog.dismiss();
@@ -295,12 +354,14 @@ public class MainActivity extends Activity {
                 });
 
                 // Create and show the options selection dialog.
-                optionsDialog.create();
-                optionsDialog.show();
+                optionsDialog.create().show();
             }
         });
     }
 
+    /**
+     * Called when this Activity is destroyed.
+     */
     @Override
     protected void onDestroy() {
 
@@ -326,7 +387,18 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void init(int checkboxId, final String key) {
+    /**
+     * Attaches a listener to a checkbox that will dis- or enable
+     * updates to state-sensor changes.
+     *
+     * @param checkboxId the id of the check-box.
+     * @param key        the key associated with the state-sensor.
+     *
+     * @see State#ACTIVITY_KEY
+     * @see State#LOCATION_KEY
+     * @see State#REACHABILITY_KEY
+     */
+    private void initStateCheckBox(int checkboxId, final String key) {
 
         final Dao<Setting, String> dao = this.getHelper().getSettingDao();
 
@@ -345,19 +417,27 @@ public class MainActivity extends Activity {
                         // Upon a state change, update the setting in the local DB.
                         String newValue = checkBox.isChecked() ? String.valueOf(Boolean.TRUE) : String.valueOf(Boolean.FALSE);
                         enabledSetting.setValue(newValue);
+
+                        // Update the local DB.
                         Log.d(TAG, "update setting: " + enabledSetting);
                         dao.update(enabledSetting);
+
                     } catch (SQLException e) {
-                        Log.e(TAG, "Oops: ", e);
+                        Log.e(TAG, "could not update setting: " + enabledSetting, e);
                     }
                 }
             });
 
         } catch (SQLException e) {
-            Log.e(TAG, "Oops: ", e);
+            Log.e(TAG, "there was a problem retrieving data from the local DB: ", e);
         }
     }
 
+    /**
+     * Returns a DatabaseHelper.
+     *
+     * @return a DatabaseHelper.
+     */
     public DatabaseHelper getHelper() {
 
         if (databaseHelper == null) {
