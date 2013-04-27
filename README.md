@@ -55,12 +55,9 @@ sdk.dir=/path/to/your/android/sdk
 Add the Sense APKLIB to your local Maven repository:
 
 ```bash
-mvn install:install-file \
-    -Dfile=apklibs/sense-android-library-1.0-SNAPSHOT.apklib \
-    -DgroupId=nl.sense_os \
-    -DartifactId=sense-android-library \
-    -Dversion=1.0-SNAPSHOT \
-    -Dpackaging=apklib
+git clone https://github.com/bkiers/sense-android-library.git -b maven-apklib
+cd sense-android-library
+mvn clean install
 ```
 
 ### 4. Test

@@ -37,13 +37,7 @@
             <artifactId>ormlite-android</artifactId>
             <version>4.45</version>
         </dependency>
-        
-        <dependency>
-            <groupId>com.google.android.gcm</groupId>
-            <artifactId>gcm-client</artifactId>
-            <version>3</version>
-        </dependency>
-        
+
         <dependency> 
             <groupId>nl.sense_os</groupId> 
             <artifactId>sense-android-library</artifactId> 
