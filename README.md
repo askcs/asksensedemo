@@ -79,3 +79,16 @@ To deploy *and* run the App, simply do:
 ```
 mvn install android:deploy android:run
 ```
+
+### 5. IDE integration
+
+#### 5.1. IntelliJ
+
+* open project
+* select pom.xml
+* junit on top
+
+#### 5.2. Eclipse
+
+* ...
+* ,,,
