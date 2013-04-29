@@ -24,7 +24,6 @@
             <groupId>android.support</groupId>
             <artifactId>compatibility-v4</artifactId>
             <version>12</version>
-            <scope>provided</scope>
         </dependency>                    
                 
         <dependency>
@@ -45,7 +44,7 @@
             <version>1.0-SNAPSHOT</version> 
             <type>apklib</type>
         </dependency>
-
+<!--
         <dependency>
             <groupId>com.actionbarsherlock</groupId>
             <artifactId>actionbarsherlock</artifactId>
@@ -60,7 +59,7 @@
             <version>4.3.0</version>
             <type>jar</type>
         </dependency>
-
+-->
         <dependency>
             <groupId>com.pivotallabs</groupId>
             <artifactId>robolectric</artifactId>
