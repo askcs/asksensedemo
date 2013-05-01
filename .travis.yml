@@ -23,6 +23,9 @@ before_install:
   #  addon-google_apis-google-16
   - android update sdk --filter platform-tools,android-16,extra-android-support,$ANDROID_SDKS --no-ui --force > /dev/null
 
+  # install maven-android-sdk-deployer
+  - git clone https://github.com/mosabua/maven-android-sdk-deployer.git && cd maven-android-sdk-deployer && mvn install
+
   # install Sense Lib
   - git clone https://github.com/bkiers/sense-android-library.git -b maven-apklib && cd sense-android-library && mvn install
 
