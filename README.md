@@ -1,4 +1,4 @@
-## Ask Sense Demo
+## Ask Sense Demo  &nbsp; [![Build Status](https://travis-ci.org/askcs/asksensedemo.png)](https://travis-ci.org/askcs/asksensedemo)
 
 A small demo app to test 
 [Sense's Android plugin](https://github.com/senseobservationsystems/sense-android-library).
