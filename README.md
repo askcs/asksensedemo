@@ -89,4 +89,4 @@ mvn install android:deploy android:run
 
 #### 5.2. Eclipse
 
-* ???
+* see: http://rgladwell.github.io/m2e-android
