@@ -106,9 +106,108 @@
                     </arguments>
                 </configuration>
             </plugin>
-            
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>local.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
         
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jarsigner-plugin</artifactId>
+                        <version>1.2</version>
+                        <executions>
+                            <execution>
+                                <id>signing</id>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <inherited>true</inherited>
+                                <configuration>
+                                    <archiveDirectory></archiveDirectory>
+                                    <includes>
+                                        <include>target/*.apk</include>
+                                    </includes>
+                                    <keystore>${keystore}</keystore>
+                                    <storepass>${storepass}</storepass>
+                                    <keypass>${keypass}</keypass>
+                                    <alias>${alias}</alias>
+                                    <arguments>
+                                        <argument>-sigalg</argument><argument>MD5withRSA</argument>
+                                        <argument>-digestalg</argument><argument>SHA1</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                        <artifactId>android-maven-plugin</artifactId>
+                        <inherited>true</inherited>
+                        <configuration>
+                            <release>false</release>
+                            <sign>
+                                <debug>false</debug>
+                            </sign>
+                            <zipalign>
+                                <skip>false</skip>
+                                <verbose>true</verbose>
+                                <inputApk>${project.build.directory}/${project.artifactId}-${project.version}.apk</inputApk>
+                                <outputApk>${project.build.directory}/${project.artifactId}-${project.version}-release.apk
+                                </outputApk>
+                            </zipalign>
+                            <manifest>
+                                <debuggable>false</debuggable>
+                                <versionCodeAutoIncrement>true</versionCodeAutoIncrement>
+                            </manifest>
+                            <proguard>
+                                <skip>true</skip>
+                            </proguard>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>manifestUpdate</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>manifest-update</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>alignApk</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>zipalign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     
 </project>

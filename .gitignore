@@ -11,6 +11,7 @@ tmp/
 local.properties
 res/values/private.xml
 keystore/
+*.keystore
 
 # IDE files
 .classpath
