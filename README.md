@@ -85,10 +85,8 @@ mvn install android:deploy android:run
 #### 5.1. IntelliJ
 
 * open project
-* select pom.xml
-* junit on top
+* select `pom.xml`
 
 #### 5.2. Eclipse
 
-* ...
-* ,,,
+* ???
