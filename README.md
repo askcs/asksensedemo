@@ -3,6 +3,9 @@
 A small demo app to test 
 [Sense's Android plugin](https://github.com/senseobservationsystems/sense-android-library).
 
+Download a pre-built APK [here](https://github.com/askcs/asksensedemo/blob/master/asksensedemo-1.0-SNAPSHOT-release.apk?raw=true), 
+or follow the steps below to build your own.
+
 ## Setup local environment
 
 ### 0. Prerequisites
