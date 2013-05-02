@@ -13,19 +13,20 @@ You need to have the following installed on your machine:
 * Maven 3.0.3+
 * Andriod SDK
 
-Install all SDK's and extra libraries through the Android SDK manager. Ensure 
-that at the very least SDK v4.2 is installed:
+Google's most recent SDK(s) and libraries, like GCM, are not in public Maven
+repositories. You'll need to install them via Google's SDK manager, and then
+put them in your local Maven repository. Start the SDK manager by doing:
 
+```bash
+$ANDROID_HOME/tools/android sdk
 ```
-ls ~/.m2/repository/android/android/
-```
 
-should list at least the folder `4.2.2_r2`
+*(this may take a while, [go duel](http://xkcd.com/303/))*
 
-Put these SDK's and libraries in your local Maven repository using the 
+Put the SDK's and libraries in your local Maven repository using the
 *Maven Android SDK Deployer*:
 
-``` 
+```bash
 git clone https://github.com/mosabua/maven-android-sdk-deployer.git
 cd maven-android-sdk-deployer
 mvn install
