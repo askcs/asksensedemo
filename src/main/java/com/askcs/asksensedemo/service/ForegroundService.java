@@ -24,8 +24,8 @@ import java.util.Set;
 import java.util.Timer;
 
 import nl.sense_os.platform.SensePlatform;
-import nl.sense_os.service.ISenseService;
 import nl.sense_os.service.ISenseServiceCallback;
+import nl.sense_os.service.SenseServiceStub;
 import nl.sense_os.service.constants.SensePrefs;
 
 import static com.askcs.asksensedemo.service.MessageType.*;
@@ -120,7 +120,7 @@ public class ForegroundService extends Service implements ServiceConnection {
 
             // The LoginActivity assured that username and password are
             // correct, no need to inspect `result`.
-            ISenseService service = getSensePlatform().getService();
+            SenseServiceStub service = getSensePlatform().getService();
 
             service.toggleMain(true);
             service.toggleLocation(true);
@@ -253,7 +253,7 @@ public class ForegroundService extends Service implements ServiceConnection {
     private void resetSensePollTask() {
 
         try {
-            ISenseService service = getSensePlatform().getService();
+            SenseServiceStub service = getSensePlatform().getService();
             Dao<Setting, String> dao = this.getHelper().getDao(Setting.class, String.class);
 
             Setting sampleRateSetting = dao.queryForId(Setting.SAMPLE_RATE_KEY);
